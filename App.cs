@@ -2,7 +2,7 @@
 
 namespace ProjetProgAvENSC1A
 {
-    class Program
+    class App
     {
         static void Main(string[] args)
         {
