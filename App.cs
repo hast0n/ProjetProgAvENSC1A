@@ -1,4 +1,5 @@
 ﻿using System;
+using CliLayoutRenderTools;
 
 namespace ProjetProgAvENSC1A
 {
@@ -6,7 +7,7 @@ namespace ProjetProgAvENSC1A
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            RenderTests.Test();
         }
     }
 }

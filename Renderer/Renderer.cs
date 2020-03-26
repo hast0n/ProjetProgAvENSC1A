@@ -6,7 +6,14 @@ using System.Text.RegularExpressions;
 using static System.String;
 
 
-// TODO : Add variable insertion and compilation within string 
+ //TODO : Add variable insertion and compilation within string
+
+ //TODO : Change input regex and accept attributes
+ //TODO :       --> placeholder
+ //TODO :       --> length(max char input number)
+
+ //TODO : Find a way to increase refresh performance 
+ //TODO :       --> use backspace (mostly not possible)
 
 
 namespace CliLayoutRenderTools
@@ -14,51 +21,78 @@ namespace CliLayoutRenderTools
     public class Renderer
     {
         #region Local Variables
+
         // visual elements to be displayed on screen
         public Dictionary<string, string> VisualResources;
-        // console width
-        public int WindowWidth;
+
         // console height
         public int WindowHeight;
+
         // game left padding
         public int FrameMargin;
+
         // game frame width
         public int FrameWidth;
+
+        #region To find a way to remove
+
         // Default char for horizontal lines
         public char HorizontalLineChar;
+
         // Default char for vertical lines
         public char VerticalLineChar;
-        // Default char to use to split strings for carriage return
+
+        #endregion
+
+        // Default char to split strings on for carriage return
         public char SplitChar;
-        // Default white space line for left padding
-        public string PaddingString;
-        // Default empty line
-        public string EmptyLine;
+
         // Regular Expression to detect if there are modifiers in a visual resource
-        public string RegexTextAttributeDelimiterPattern;
+        //public static string RegexTextAttributeDelimiterPattern = @"(<.*>)";
+
         // RegEx to detect if a visual resource needs to be framed or repeated
-        public string RegexScreenParamDelimiterPattern;
+        public static readonly string RegexScreenParamDelimiterPattern = @"^(?:([1-9]+)\*)?(?:(?:\[([A-za-z0-9]+)\])||([A-Za-z0-9]+))$";
+
         // RegEx to get modifier index in visual resource
-        public string RegexInputDelimiterPattern;
+        public static readonly string RegexInputDelimiterPattern = @"<(?:input|color):[^>]+>";
+
         // RegEx to extract modifier values in visual resource
-        public string RegexInputParamDelimiterPattern;
-        // RegEx to extract variables names in visual resource
-        public string RegexVariableIdentifierPattern;
-        // Default Horizontal bar
-        public string HorizontalBar;
+        public static readonly string RegexInputParamDelimiterPattern = @"<(input|color):([^>]+)>";
+        
         // Default placeholder for input
         public string DefaultInputValue;
+
         // Boolean that asserts if inputs are being allowed or not
         public bool CanInput;
-        #endregion
+
+        // Default console colors configuration
+        private readonly ConsoleColor[] _defaultColors;
 
         // Console background colors
         public Dictionary<string, ConsoleColor> ConsoleBackgroundColors;
+
         // Console foreground colors
         public Dictionary<string, ConsoleColor> ConsoleTextColors;
 
+        #endregion
+
+        #region Local Properties
+        public string PaddingString => new string(' ', FrameMargin);
+        public string HorizontalBar => new string(HorizontalLineChar, FrameWidth - 2);
+        public int WindowWidth => FrameWidth + FrameMargin* 2;
+        #endregion
+        
         public Renderer()
         {
+            // https://regexr.com/4s4lb
+
+            // Save console colors config
+            _defaultColors = new ConsoleColor[]
+            {
+                Console.BackgroundColor,
+                Console.ForegroundColor
+            }; 
+
             CanInput = true;
             FrameWidth = 100;
             WindowHeight = 50;
@@ -66,14 +100,7 @@ namespace CliLayoutRenderTools
             HorizontalLineChar = '─';
             VerticalLineChar = '│';
             SplitChar = '\n';
-            DefaultInputValue ??= " ";
-            // https://regexr.com/4s4lb
-            RegexVariableIdentifierPattern = @"\$([a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*)";
-            RegexTextAttributeDelimiterPattern = @"(<.*>)";
-            RegexScreenParamDelimiterPattern = @"^(?:([1-9]+)\*)?(?:(?:\[([A-za-z0-9]+)\])||([A-Za-z0-9]+))$";
-            RegexInputDelimiterPattern = @"<(?:input|color):[^>]+>";
-            RegexInputParamDelimiterPattern = @"<(input|color):([^>]+)>";
-
+            DefaultInputValue = " ";
 
             // Define basic console colors dictionary to easily access them
             ConsoleBackgroundColors = new Dictionary<string, ConsoleColor>()
@@ -117,22 +144,18 @@ namespace CliLayoutRenderTools
                 {"darkmagenta", ConsoleColor.White},
             };
 
-            UpdateResources();
-
-            ChangeCliColorScheme("white");
+            // Initialize default viewing experience
+            SetConsoleColorScheme("black");
         }
-        public void UpdateResources()
+
+        private void SetWindowSize()
         {
-            // Set default values according to instance parameters
-            //FrameWidth = WindowWidth - FramePadding * 2 - 4;
-            PaddingString = new string(' ', FrameMargin);
-            HorizontalBar = new string(HorizontalLineChar, FrameWidth - 2);
+            if (Console.WindowWidth != WindowWidth) Console.WindowWidth = WindowWidth;
+            if (Console.WindowHeight != WindowHeight) Console.WindowHeight = WindowHeight;
+        }
 
-            WindowWidth = FrameWidth + FrameMargin * 2;
-
-            PaddingString = new string(' ', FrameMargin);
-            HorizontalBar = new string(HorizontalLineChar, FrameWidth - 2);
-
+        public void SetDefaultResources()
+        {
             VisualResources = new Dictionary<string, string>()
             {
                 {
@@ -148,14 +171,18 @@ namespace CliLayoutRenderTools
                     Empty
                 },
             };
-
-            Console.SetWindowSize(WindowWidth, WindowHeight);
         }
 
-        public void ChangeCliColorScheme(string color)
+        public void SetConsoleColorScheme(string color)
         {
             Console.BackgroundColor = ConsoleBackgroundColors[color];
             Console.ForegroundColor = ConsoleTextColors[color];
+        }
+
+        public void ResetConsoleColors()
+        {
+            Console.BackgroundColor = _defaultColors[0];
+            Console.ForegroundColor = _defaultColors[1];
         }
 
         public void AddVisualResources(string key, string value)
@@ -171,14 +198,25 @@ namespace CliLayoutRenderTools
             }
         }
 
+
+
+
+        
+        public static string GetResourceName(string identifier, out GroupCollection groups)
+        {
+            groups = Regex.Match(identifier, RegexScreenParamDelimiterPattern).Groups;
+            var key = groups.Count > 1
+                ? IsNullOrEmpty(groups[2].Value)
+                    ? groups[3].Value
+                    : groups[2].Value
+                : identifier;
+        
+            return key;
+        }
+
         public string GetResourceRepr(string keyIdentifier, bool compute = true)
         {
-            var groups= Regex.Match(keyIdentifier, RegexScreenParamDelimiterPattern).Groups;
-            var key = groups.Count > 1 
-                ? IsNullOrEmpty(groups[2].Value)
-                    ? groups[3].Value 
-                    : groups[2].Value
-                : keyIdentifier;
+            string key = GetResourceName(keyIdentifier, out GroupCollection groups);
 
             var baseResource = VisualResources.GetValueOrDefault(key);
             baseResource ??= $"<Resource '{key}' Not Found>";
@@ -206,6 +244,10 @@ namespace CliLayoutRenderTools
 
             return baseResource;
         }
+        
+
+
+
 
         public string EncapsulateString(string line)
         {
@@ -287,9 +329,15 @@ namespace CliLayoutRenderTools
             }
         }
 
-        public Dictionary<int, string[]> RenderAndWaitForInput(
-            List<string> screen, Dictionary<string, object> variables = null)
+
+
+
+
+        public Dictionary<int, string[]> RenderAndWaitForInput(ContentPage page)
         {
+            SetWindowSize();
+            SetConsoleColorScheme("black");
+
             #region Render Period Initialization
             Dictionary<int, string[]> modifierDictionary = new Dictionary<int, string[]>();
 
@@ -297,19 +345,24 @@ namespace CliLayoutRenderTools
             bool HasSetModifiers()
             {
                 // Return a bool indicating if user has already input data
-                return modifierDictionary.Where(x => x.Value[0] != "<color>")
-                           .Count(x => !x.Value[0].Equals(DefaultInputValue)) > 0;
+                return modifierDictionary
+                    .Where(x => x.Value[0] != "<color>")
+                    .Count(x => !x.Value[0].Equals(DefaultInputValue)) > 0;
             }
             int FirstUnsetInput()
             {
                 // Get index of first unset input modifier
-                return modifierDictionary.Where(x => x.Value[0] != "<color>").OrderBy(x => x.Key)
+                return modifierDictionary
+                    .Where(x => x.Value[0] != "<color>")
+                    .OrderBy(x => x.Key)
                     .FirstOrDefault(x => x.Value[0].Equals(DefaultInputValue)).Key;
             }
             int LastSetInput()
             {
                 // Get index of Last set input modifier
-                return modifierDictionary.OrderBy(x => x.Key).Where(x => x.Value[0] != "<color>")
+                return modifierDictionary
+                    .Where(x => x.Value[0] != "<color>")
+                    .OrderBy(x => x.Key)
                     .LastOrDefault(x => !x.Value[0].Equals(DefaultInputValue)).Key;
             }
             void WipeLastInput()
@@ -323,22 +376,14 @@ namespace CliLayoutRenderTools
             }
             #endregion
 
-            StringBuilder screenString = DumpScreen(screen, ref modifierDictionary);
-            RenderScreen(screenString, modifierDictionary);
+            StringBuilder pageString = DumpScreen(page, modifierDictionary);
+            int modIndex = FirstUnsetInput() == 0 ? LastSetInput() : FirstUnsetInput();
 
-            // Get the index of current modifier to set
-            int modIndex = (FirstUnsetInput() == 0) ? LastSetInput() : FirstUnsetInput();
-
-            if (modIndex == 0)
+            if (modIndex != 0)
             {
-                // no input modifiers in screen
-                RenderScreen(screenString, modifierDictionary);
-                //var input = Console.ReadKey();
-            }
-            else
-            {
+                RenderScreen(pageString, modifierDictionary);
+                
                 // Iterate over modifiers and set them
-
                 while (modifierDictionary.Count > 0 && CanInput)
                 {
                     modIndex = (FirstUnsetInput() == 0) ? LastSetInput() : FirstUnsetInput();
@@ -373,14 +418,15 @@ namespace CliLayoutRenderTools
                         modifierDictionary[modIndex][0] = input;
                     }
 
-                    RenderScreen(screenString, modifierDictionary);
+                    RenderScreen(pageString, modifierDictionary);
                 }
             }
 
+            ResetConsoleColors();
             return modifierDictionary;
         }
 
-        private StringBuilder DumpScreen(List<string> screen, ref Dictionary<int, string[]> modifierDictionary)
+        private StringBuilder DumpScreen(List<string> screen, Dictionary<int, string[]> modifierDictionary)
         {
             // Read screen to display and extract modifier indexes
 
@@ -441,7 +487,7 @@ namespace CliLayoutRenderTools
                     // Write it
                     Console.Write(leftString);
                     // Change console color
-                    ChangeCliColorScheme(kvp.Value[1]);
+                    SetConsoleColorScheme(kvp.Value[1]);
                     // Set rendering index
                     renderedPartIndex = kvp.Key;
                 }
