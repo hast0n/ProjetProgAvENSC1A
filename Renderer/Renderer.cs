@@ -10,7 +10,7 @@ using static System.String;
 
  //TODO : Change input regex and accept attributes
  //TODO :       --> placeholder
- //TODO :       --> length(max char input number)
+ //TODO :       --> length (max char input number)
 
  //TODO : Find a way to increase refresh performance 
  //TODO :       --> use backspace (mostly not possible)
@@ -197,11 +197,9 @@ namespace CliLayoutRenderTools
                 VisualResources.Add(kvp.Key, kvp.Value);
             }
         }
-
-
-
-
         
+
+
         public static string GetResourceName(string identifier, out GroupCollection groups)
         {
             groups = Regex.Match(identifier, RegexScreenParamDelimiterPattern).Groups;
@@ -245,8 +243,6 @@ namespace CliLayoutRenderTools
             return baseResource;
         }
         
-
-
 
 
         public string EncapsulateString(string line)
@@ -331,16 +327,23 @@ namespace CliLayoutRenderTools
 
 
 
-
-
-        public Dictionary<int, string[]> RenderAndWaitForInput(ContentPage page)
+        public Dictionary<int, string[]> Render(ContentPage page)
         {
             SetWindowSize();
             SetConsoleColorScheme("black");
 
-            #region Render Period Initialization
-            Dictionary<int, string[]> modifierDictionary = new Dictionary<int, string[]>();
+            var userInputs = RenderAndWaitForInput(page);
 
+            return userInputs;
+        }
+
+
+
+        private Dictionary<int, string[]> RenderAndWaitForInput(ContentPage page)
+        {
+            Dictionary<int, string[]> modifierDictionary;
+
+            #region Render Period Initialization
             // Set useful local methods
             bool HasSetModifiers()
             {
@@ -376,7 +379,8 @@ namespace CliLayoutRenderTools
             }
             #endregion
 
-            StringBuilder pageString = DumpScreen(page, modifierDictionary);
+
+            StringBuilder pageString = DumpScreen(page, out modifierDictionary);
             int modIndex = FirstUnsetInput() == 0 ? LastSetInput() : FirstUnsetInput();
 
             if (modIndex != 0)
@@ -426,15 +430,19 @@ namespace CliLayoutRenderTools
             return modifierDictionary;
         }
 
-        private StringBuilder DumpScreen(List<string> screen, Dictionary<int, string[]> modifierDictionary)
+        private StringBuilder DumpScreen(ContentPage page, out Dictionary<int, string[]> modifierDictionary)
         {
-            // Read screen to display and extract modifier indexes
+            // Read screen to extract modifier indexes
+
+            modifierDictionary = new Dictionary<int, string[]>();
 
             StringBuilder output = new StringBuilder();
 
-            foreach (string lineIdentifier in screen)
+            var resources = page.SerializedResources;
+
+            foreach (string key in page.Layout)
             {
-                string line = GetResourceRepr(lineIdentifier);
+                string line = GetResourceRepr(key);
 
                 Regex r = new Regex(RegexInputDelimiterPattern);
                 var match = r.Match(line);

@@ -1,7 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+
+
+// TODO : Surcharge de ToString() ?
+
 
 namespace CliLayoutRenderTools
 {
@@ -9,21 +12,24 @@ namespace CliLayoutRenderTools
     {
         // Define default variable pattern regex
         public static readonly string VarPatternRegex = @"\$([a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*)";
-        // Define local visual resources to be customized
+        // Define local visual resources
         public Dictionary<string, string> LocalResources { get; protected set; }
         // Get global visual resources
-        public Dictionary<string, string> SharedResources { get; protected set; }
+        protected Dictionary<string, string> SharedResources { get; set; }
         // Get page attributes values
-        public Dictionary<string, string> PageValues { get; protected set; }
+        public Dictionary<string, string> PageModifiers { get; protected set; }
         // Define page layout
         public List<string> Layout { get; protected set; }
         // Define property for accessing serialized page
-        public Dictionary<string, string> Serialized => Serialize();
+        public Dictionary<string, string> SerializedResources => Serialize();
+        // Get all default uncomputed related visual resources
+        public List<string> VisualResources => Layout.Select(
+            selector: key => GetResourceOrDefault(key)[1]
+        ).Distinct().ToList();
+        
+        public void Clear() => LocalResources = new Dictionary<string, string>();
 
-        public void AddResource(string key, string value)
-        {
-            LocalResources.Add(key, value);
-        }
+        public void AddResource(string key, string value) => LocalResources.Add(key, value);
 
         public void AddResource(Dictionary<string, string> extendDictionary)
         {
@@ -32,46 +38,51 @@ namespace CliLayoutRenderTools
                 LocalResources.Add(kvp.Key, kvp.Value);
             }
         }
-
-        public void Clear()
-        {
-            LocalResources = new Dictionary<string, string>();
-        }
-
-        protected void Prepare()
-        {
-
-        }
-
-        private string GetResourceOrDefault(string resourceIdentifier)
+        
+        private string[] GetResourceOrDefault(string resourceIdentifier)
         {
             string key = Renderer.GetResourceName(resourceIdentifier, out GroupCollection groups);
-            string errorMessage = $"<--! Missing Resource for Identifier \"{resourceIdentifier}\" !-->";
+            string errorMessage = $"<--! Missing Resource for Identifier \'{resourceIdentifier}\' !-->";
 
-            return LocalResources.GetValueOrDefault(key, 
-                  SharedResources.GetValueOrDefault(key, errorMessage));
+            // will return value in LocalResources if exists in both
+            return new string[]
+            {
+                key,
+                LocalResources.GetValueOrDefault(key,
+                    SharedResources.GetValueOrDefault(key,
+                        errorMessage))
+            };
         }
 
         private Dictionary<string, string> Serialize()
         {
             Regex r = new Regex(VarPatternRegex);
-            
-            int i = 0;
-            
+            var temp = new Dictionary<string, string>();
+
             foreach (var resourceIdentifier in Layout)
             {
-                string resource = GetResourceOrDefault(resourceIdentifier);
+                string[] resource = GetResourceOrDefault(resourceIdentifier);
 
-                var matches = r.Matches(resource);
-                if (matches.Count > 1)
+                var matches = r.Matches(resource[1]);
+                
+                foreach (Match match in matches)
                 {
-
+                    var g = match.Groups;
+                    try
+                    {
+                        resource[1] = resource[1].Replace(g[0].Value, PageModifiers[g[1].Value]);
+                    }
+                    catch (KeyNotFoundException e)
+                    {
+                        throw new AttributeValueNotFoundException(
+                            $"Value not specified for attribute \'{g[1].Value}\'.");
+                    }
                 }
 
-                i++;
+                if (!temp.ContainsKey(resource[0])) temp.Add(resource[0], resource[1]);
             }
 
-            return LocalResources;
+            return temp;
         }
     }
 }

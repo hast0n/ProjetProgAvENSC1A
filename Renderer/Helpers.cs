@@ -6,26 +6,6 @@ using System.Text.RegularExpressions;
 
 namespace CliLayoutRenderTools
 {
-    public class VisualResourceNotFoundException : Exception
-    {
-        public VisualResourceNotFoundException()
-        {
-
-        }
-
-        public VisualResourceNotFoundException(string message)
-            : base(message)
-        {
-
-        }
-
-        public VisualResourceNotFoundException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-
-        }
-    }
-
     // A simple class used to help the Renderer to frame content
     static class RendererHelper
     {
