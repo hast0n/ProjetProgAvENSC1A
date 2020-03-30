@@ -6,14 +6,16 @@ using System.Text.RegularExpressions;
 using static System.String;
 
 
- //TODO : Add variable insertion and compilation within string
-
  //TODO : Change input regex and accept attributes
  //TODO :       --> placeholder
  //TODO :       --> length (max char input number)
 
  //TODO : Find a way to increase refresh performance 
  //TODO :       --> use backspace (mostly not possible)
+
+ //TODO : Colors on input sections
+
+ //TODO : Restrict regex char acceptance
 
 
 namespace CliLayoutRenderTools
@@ -50,20 +52,44 @@ namespace CliLayoutRenderTools
         // Regular Expression to detect if there are modifiers in a visual resource
         //public static string RegexTextAttributeDelimiterPattern = @"(<.*>)";
 
-        // RegEx to detect if a visual resource needs to be framed or repeated
-        public static readonly string RegexScreenParamDelimiterPattern = @"^(?:([1-9]+)\*)?(?:(?:\[([A-za-z0-9]+)\])||([A-Za-z0-9]+))$";
+        // RegEx to detect if a visual resource needs to be framed or repeated (quite heavy...)
+        private const string LayoutElementPattern = @"^(?:([1-9]+)\*)?(?:(?:\[([A-za-z0-9]+)\])||([A-Za-z0-9]+))$";
 
         // RegEx to get modifier index in visual resource
-        public static readonly string RegexInputDelimiterPattern = @"<(?:input|color):[^>]+>";
+        //public static readonly string RegexInputDelimiterPattern = @"<(?:input|color):[^>]+>";
 
         // RegEx to extract modifier values in visual resource
-        public static readonly string RegexInputParamDelimiterPattern = @"<(input|color):([^>]+)>";
+        //public static readonly string RegexInputParamDelimiterPattern = @"<(input|color):([^>]+)>";
         
+        // RegEx to detect/extract inputs & attributes
+        public static readonly Dictionary<string, string> RegexPatterns = new Dictionary<string, string>()
+        {
+            {
+                "any",
+                @"<(input|color|selector).+>"
+            },
+            {
+                "color",
+                @"<color (?:value=([a-zA-Z]+)){1}>"
+            },
+            {
+                // Will not trigger if :
+                //      -> presence of unnecessary whitespaces
+                //      -> length attr comes before regex attr
+                "input",
+                @"<input(?: regex=([^\s]+)){1}(?: length=([0-9]{1,2}))?>"
+            },
+            {
+                "selector",
+                ""
+            }
+        }; 
+
         // Default placeholder for input
         public string DefaultInputValue;
 
         // Boolean that asserts if inputs are being allowed or not
-        public bool CanInput;
+        //public bool CanInput;
 
         // Default console colors configuration
         private readonly ConsoleColor[] _defaultColors;
@@ -80,8 +106,10 @@ namespace CliLayoutRenderTools
         public string PaddingString => new string(' ', FrameMargin);
         public string HorizontalBar => new string(HorizontalLineChar, FrameWidth - 2);
         public int WindowWidth => FrameWidth + FrameMargin* 2;
-        #endregion
         
+        private string Input => $"{Console.ReadKey().KeyChar}";
+        #endregion
+
         public Renderer()
         {
             // https://regexr.com/4s4lb
@@ -93,7 +121,7 @@ namespace CliLayoutRenderTools
                 Console.ForegroundColor
             }; 
 
-            CanInput = true;
+            //CanInput = true;
             FrameWidth = 100;
             WindowHeight = 50;
             FrameMargin = 5;
@@ -185,6 +213,8 @@ namespace CliLayoutRenderTools
             Console.ForegroundColor = _defaultColors[1];
         }
 
+
+
         public void AddVisualResources(string key, string value)
         {
             VisualResources.Add(key, value);
@@ -202,7 +232,7 @@ namespace CliLayoutRenderTools
 
         public static string GetResourceName(string identifier, out GroupCollection groups)
         {
-            groups = Regex.Match(identifier, RegexScreenParamDelimiterPattern).Groups;
+            groups = Regex.Match(identifier, LayoutElementPattern).Groups;
             var key = groups.Count > 1
                 ? IsNullOrEmpty(groups[2].Value)
                     ? groups[3].Value
@@ -212,12 +242,38 @@ namespace CliLayoutRenderTools
             return key;
         }
 
-        public string GetResourceRepr(string keyIdentifier, bool compute = true)
+        public List<string> GetViewContent(ContentPage view)
         {
-            string key = GetResourceName(keyIdentifier, out GroupCollection groups);
+            var resources = view.SerializedResources;
+            List<string> viewContent = new List<string>();
+            
+            foreach (var res in view.Layout)
+            {
+                string key = GetResourceName(res, out GroupCollection groups);
+                string line = resources[key];
+                viewContent.Add(GetComputedResource(res, line));
+            }
 
-            var baseResource = VisualResources.GetValueOrDefault(key);
-            baseResource ??= $"<Resource '{key}' Not Found>";
+            return viewContent;
+        }
+
+
+        public string GetComputedResource(string identifier, string baseResource, bool compute = true)
+        {
+            return GetResourceRepr(identifier, baseResource, compute);
+        }
+
+        public string GetComputedResource(string identifier, bool compute = true)
+        {
+            string baseResource = VisualResources.GetValueOrDefault(identifier)
+                                   ?? $"<Resource '{identifier}' Not Found>";
+
+            return GetResourceRepr(identifier, baseResource, compute);
+        }
+
+        private string GetResourceRepr(string identifier, string baseResource, bool compute)
+        {
+            string key = GetResourceName(identifier, out GroupCollection groups);
 
             if (compute)
             {
@@ -225,7 +281,7 @@ namespace CliLayoutRenderTools
                 var needsEncaps = !IsNullOrEmpty(groups[2].Value);
                 var needsRep = !IsNullOrEmpty(groups[1].Value);
 
-                if (needsEncaps) modLine = FrameOneLine(modLine);
+                if (needsEncaps) modLine = FrameMultipleLines(modLine);
 
                 var buffer = Empty;
 
@@ -242,14 +298,59 @@ namespace CliLayoutRenderTools
 
             return baseResource;
         }
+
+
+
+        private string FrameMultipleLines(string linesString)
+        {
+            // Frame multiple lines from one visual resource
+
+            try
+            {
+                // extract lines with multiline delimiters
+                string[] linesArray = linesString.Split(SplitChar)
+                    .Where(l => !IsNullOrEmpty(l)).ToArray();
+
+                if (linesArray.Length < 1)
+                {
+                    throw new StackOverflowException();
+                }
+
+                StringBuilder stringBuilder = new StringBuilder();
+
+                // Append each framed line to StringBuilder and return it
+                var collection = linesArray
+                    .Where(l => !IsNullOrEmpty(l)).ToList();
+                var lastIndex = collection.Count() - 1;
+
+                for (int i = 0; i < collection.Count(); i++)
+                {
+                    string line = collection[i];
+                    stringBuilder.AppendFormat("{0}{1}",
+                        FrameOneLine(line),
+                        i == lastIndex ? "" : "\n");
+                }
+
+                return stringBuilder.ToString();
+            }
+            catch (StackOverflowException)
+            {
+                // no multiline delimiter
+                return FrameOneLine(linesString);
+            }
+        }
+
+        private string FrameOneLine(string line)
+        {
+            // Frame one line
+            return EncapsulateString(line).Pad(FrameMargin);
+        }
         
-
-
-        public string EncapsulateString(string line)
+        private string EncapsulateString(string line)
         {
             // Frame a line to match the game outside border
 
-            Regex r = new Regex(RegexInputParamDelimiterPattern);
+            Regex r = new Regex(RegexPatterns["any"]);
             string trimmedLine = line.Trim();
             string pseudoLine = trimmedLine;
             var match = r.Match(pseudoLine);
@@ -286,45 +387,7 @@ namespace CliLayoutRenderTools
             return Format("{2}{1}{0}{1}{3}{2}",
                 trimmedLine, paddingString, symb, (colParity) ? " " : "");
         }
-
-        public string FrameOneLine(string line)
-        {
-            // Frame one line
-            return EncapsulateString(line).Pad(FrameMargin);
-        }
-
-        public string FrameMultipleLines(string linesString)
-        {
-            // Frame multiple lines from one visual resource
-
-            try
-            {
-                // extract lines with multiline delimiters
-                string[] linesArray = linesString.Split(SplitChar)
-                    .Where(l => !IsNullOrEmpty(l)).ToArray();
-
-                if (linesArray.Length < 1)
-                {
-                    throw new StackOverflowException();
-                }
-
-                StringBuilder stringBuilder = new StringBuilder();
-
-                // Append each framed line to StringBuilder and return it
-                foreach (string line in linesArray.Where(l => !IsNullOrEmpty(l)))
-                {
-                    stringBuilder.Append(FrameOneLine(line));
-                }
-
-                return stringBuilder.ToString();
-            }
-            catch (StackOverflowException)
-            {
-                // no multiline delimiter
-                return FrameOneLine(linesString);
-            }
-        }
-
+        
 
 
         public Dictionary<int, string[]> Render(ContentPage page)
@@ -332,14 +395,14 @@ namespace CliLayoutRenderTools
             SetWindowSize();
             SetConsoleColorScheme("black");
 
-            var userInputs = RenderAndWaitForInput(page);
+            var userInputs = LaunchAndWaitForInput(page);
 
             return userInputs;
         }
 
 
 
-        private Dictionary<int, string[]> RenderAndWaitForInput(ContentPage page)
+        private Dictionary<int, string[]> LaunchAndWaitForInput(ContentPage page)
         {
             Dictionary<int, string[]> modifierDictionary;
 
@@ -382,20 +445,24 @@ namespace CliLayoutRenderTools
 
             StringBuilder pageString = DumpScreen(page, out modifierDictionary);
             int modIndex = FirstUnsetInput() == 0 ? LastSetInput() : FirstUnsetInput();
-
-            if (modIndex != 0)
+            
+            if (modIndex == 0)
             {
                 RenderScreen(pageString, modifierDictionary);
-                
+            }
+            else
+            {
+                RenderScreen(pageString, modifierDictionary);
+
                 // Iterate over modifiers and set them
-                while (modifierDictionary.Count > 0 && CanInput)
+                while (modifierDictionary.Count > 0) // && CanInput)
                 {
-                    modIndex = (FirstUnsetInput() == 0) ? LastSetInput() : FirstUnsetInput();
+                    modIndex = FirstUnsetInput() == 0 ? LastSetInput() : FirstUnsetInput();
 
-                    string currentRegexPattern = modifierDictionary[modIndex][1];
-                    string input = $"{Console.ReadKey().KeyChar}";
+                    string currentRegexPattern = $"^{modifierDictionary[modIndex][1]}$";
+                    string input = Input;
 
-                    while (!Regex.IsMatch(input, currentRegexPattern) && CanInput)
+                    while (!Regex.IsMatch(input, currentRegexPattern)) // && CanInput)
                     {
                         Console.Write("\b");
 
@@ -414,10 +481,10 @@ namespace CliLayoutRenderTools
                             return modifierDictionary;
                         }
 
-                        input = $"{Console.ReadKey().KeyChar}";
+                        input = Input;
                     }
 
-                    if (!input.Equals("\b") && CanInput)
+                    if (!input.Equals("\b")) // && CanInput)
                     {
                         modifierDictionary[modIndex][0] = input;
                     }
@@ -438,18 +505,19 @@ namespace CliLayoutRenderTools
 
             StringBuilder output = new StringBuilder();
 
-            var resources = page.SerializedResources;
+            var resources = GetViewContent(page);
 
-            foreach (string key in page.Layout)
+            foreach (string line in resources)
             {
-                string line = GetResourceRepr(key);
+                string computedLine = line;
 
-                Regex r = new Regex(RegexInputDelimiterPattern);
-                var match = r.Match(line);
+                Regex r = new Regex(RegexPatterns["any"]);
+                var match = r.Match(computedLine);
 
                 while (match.Success)
                 {
-                    var group = Regex.Match(match.Value, RegexInputParamDelimiterPattern).Groups;
+                    // TODO: change regex pattern according to previously determined field type
+                    var group = Regex.Match(match.Value, RegexPatterns["input"]).Groups;
                     int modIndex = output.Length + match.Index;
                     string replacement = Empty;
 
@@ -465,12 +533,12 @@ namespace CliLayoutRenderTools
                     }
 
                     // seems to need instance of Regex to use occurence replacement quantifier...
-                    line = r.Replace(line, replacement, 1);
+                    computedLine = r.Replace(computedLine, replacement, 1);
                     // search again for any new match (new input)
-                    match = r.Match(line);
+                    match = r.Match(computedLine);
                 }
 
-                output.AppendLine(line);
+                output.AppendLine(computedLine);
             }
 
             return output;

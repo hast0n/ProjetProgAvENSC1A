@@ -6,5 +6,6 @@ namespace ProjetProgAvENSC1A.Services
 {
     interface IDatabase
     {
+        public abstract bool AddEntry(object entry);
     }
 }

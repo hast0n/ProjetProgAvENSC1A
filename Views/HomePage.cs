@@ -79,7 +79,7 @@ namespace ProjetProgAvENSC1A.Views
                 },
                 {
                     "test",
-                    "--> | <input:[A-Za-z0-9]*> | <--"
+                    "--> | <color:blue><input:[A-Za-z0-9]><color:black> | <--"
                 },
             };
 

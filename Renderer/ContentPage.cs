@@ -26,7 +26,17 @@ namespace CliLayoutRenderTools
         public List<string> VisualResources => Layout.Select(
             selector: key => GetResourceOrDefault(key)[1]
         ).Distinct().ToList();
-        
+        // Get or set a layout element
+        public string this[int index] => Layout[index];
+        // Get or set a visual resource using resource identifier
+        public string this[string identifier]
+        {
+            get => GetResourceOrDefault(identifier)[1];
+            set => LocalResources[identifier] = value;
+        }
+
+
+
         public void Clear() => LocalResources = new Dictionary<string, string>();
 
         public void AddResource(string key, string value) => LocalResources.Add(key, value);
@@ -39,6 +49,8 @@ namespace CliLayoutRenderTools
             }
         }
         
+
+
         private string[] GetResourceOrDefault(string resourceIdentifier)
         {
             string key = Renderer.GetResourceName(resourceIdentifier, out GroupCollection groups);
