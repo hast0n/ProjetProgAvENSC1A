@@ -28,11 +28,11 @@ namespace ProjetProgAvENSC1A.Views
             {
                 {
                     "intro",
-                    "Bienvenue à toi, $userName ! C'est cool walah <color:blue>$qqch<color:black>"
+                    "Bienvenue à toi, $userName ! C'est cool walah <color value=blue>$qqch<color value=black>"
                 },
                 {
                     "test",
-                    "--> | <input:[A-Za-z0-9]*> | <--"
+                    "--> | <input regex=[A-Za-z0-9]> | <--"
                 },
             };
         }
