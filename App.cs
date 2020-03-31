@@ -22,4 +22,6 @@ namespace ProjetProgAvENSC1A
     }
 }
 
-// TODO: DumpScreen() --> accept new fields attributes
+// TODO: Lock edition to active field
+// TODO: Press Return to edit next field
+// TODO: Empty active field & backpace to access previous one

@@ -17,15 +17,17 @@ namespace ProjetProgAvENSC1A.Views
 
             Layout = new List<string>()
             {
+                "2*emptyLine",
                 "topBar",
-                "[emptyLine]",
+                "2*[emptyLine]",
                 "[loginHint]",
-                "[emptyLine]",
+                "2*[emptyLine]",
                 "[userHint]",
-                "[input]",
-                "[pswHint]",
-                "[input]",
+                "[userInput]",
                 "[emptyLine]",
+                "[pswHint]",
+                "[pswInput]",
+                "2*[emptyLine]",
                 "botBar"
             };
 
@@ -33,22 +35,30 @@ namespace ProjetProgAvENSC1A.Views
             {
                 {
                     "loginHint",
-                    "Login with your credentials to access content :"
+                    "Login with your credentials " +
+                    "to access the application:"
                 },
                 {
                     "userHint",
-                    "Select username :"
+                    "Enter Username :"
                 },
                 {
                     "pswHint",
-                    "Select password"
+                    "Enter Password :"
                 },
                 {
-                    "input",
+                    "userInput",
                     String.Join(splitChar, ""+
-                        "┌────────┐",
-                        "│<input regex=[A-Za-z0-9] length=8>│",
-                        "└────────┘")
+                        "┌────────────┐",
+                        "│  <input regex=[A-Za-z0-9\\s] length=8>  │",
+                        "└────────────┘")
+                },
+                {
+                    "pswInput",
+                    String.Join(splitChar, ""+
+                        "┌────────────┐",
+                        "│  <input regex=[A-Za-z0-9] length=8>  │",
+                        "└────────────┘")
                 }
             };
         }
