@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ProjetProgAvENSC1A.Services
 {
-    interface IDatabase
+    interface IDataTable
     {
         public abstract bool AddEntry(object entry);
     }

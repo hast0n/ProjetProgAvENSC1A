@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
@@ -65,7 +66,7 @@ namespace CliLayoutRenderTools
         // RegEx to extract modifier values in visual resource
         //public static readonly string RegexInputParamDelimiterPattern = @"<(input|color):([^>]+)>";
         
-        // RegEx to detect/extract inputs & attributes
+        // RegEx to detect/extract fields & attributes
         public static readonly Dictionary<string, string> RegexPatterns = new Dictionary<string, string>()
         {
             {
@@ -80,6 +81,7 @@ namespace CliLayoutRenderTools
                 // Will not trigger if :
                 //      -> presence of unnecessary whitespaces
                 //      -> length attr comes before regex attr
+                //      -> no regex attribute
                 "input",
                 @"<input(?: regex=([^\s]+)){1}(?: length=([0-9]{1,2}))?>{1}"
             },
@@ -234,7 +236,7 @@ namespace CliLayoutRenderTools
         
 
 
-        public Dictionary<int, Dictionary<string ,string>> Render(ContentPage page)
+        public ImmutableDictionary<int, Dictionary<string ,string>> Render(ContentPage page)
         {
             SetWindowSize();
             SetConsoleColorScheme("black");
@@ -427,7 +429,7 @@ namespace CliLayoutRenderTools
         
 
 
-        private Dictionary<int, Dictionary<string, string>> LaunchAndWaitForInput(ContentPage page)
+        private ImmutableDictionary<int, Dictionary<string, string>> LaunchAndWaitForInput(ContentPage page)
         {
             StringBuilder pageString = DumpScreen(page, out var modifierDictionary);
             
@@ -456,15 +458,15 @@ namespace CliLayoutRenderTools
 
                         if (input.Equals(Constants.CARRIAGE_RETURN) && modifierDictionary.GetFirstUnsetInput() == 0)
                         {
-                            return (Dictionary<int, Dictionary<string, string>>) 
-                                modifierDictionary.Where(kvp => 
+                            var kvpEnumerable = modifierDictionary.Where(kvp => 
                                     kvp.Value[Constants.TYPE].Equals(Constants.INPUT));
+                            return kvpEnumerable.ToImmutableDictionary();
                         }
 
                         input = Input;
                     }
 
-                    if (!input.Equals(Constants.BACKSPACE))
+                    if (!new string[] {Constants.BACKSPACE, Constants.CARRIAGE_RETURN}.Contains(input))
                     {
                         int length = int.Parse(modifierDictionary[modIndex][Constants.LENGTH]);
                         string userInput = modifierDictionary[modIndex][Constants.VALUE];
@@ -481,7 +483,19 @@ namespace CliLayoutRenderTools
             }
 
             ResetConsoleColors();
-            return modifierDictionary;
+
+            return new Dictionary<int, Dictionary<string, string>>()
+            {
+                {
+                    0,
+                    new Dictionary<string, string>()
+                    {
+                        {
+                            Constants.TYPE, null
+                        }
+                    }
+                }
+            }.ToImmutableDictionary();
         }
 
         private StringBuilder DumpScreen(ContentPage page,

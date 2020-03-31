@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ProjetProgAvENSC1A.Services
 {
-    class UserDatabase : IDatabase
+    class UserDataTable : IDataTable
     {
         public bool AddEntry(object entry)
         {
