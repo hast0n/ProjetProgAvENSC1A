@@ -10,14 +10,14 @@ namespace ProjetProgAvENSC1A
         {
             // Pour le tuto : utiliser la ligne suivante et commenter le rester
             // Les fichiers se trouvent dans .\Renderer\testScript.cs et .\Views\HomePage.cs
-            //RenderTests.Test();
+            RenderTests.Test();
 
-            Renderer console = new Renderer() { FrameWidth = 70 };
-            console.SetDefaultResources();
+            //Renderer console = new Renderer() { FrameWidth = 70 };
+            //console.SetDefaultResources();
 
-            LoginPage view = new LoginPage(console.VisualResources, console.SplitChar);
+            //LoginPage view = new LoginPage(console.VisualResources, console.SplitChar);
 
-            console.Render(view);
+            //console.Render(view);
         }
     }
 }

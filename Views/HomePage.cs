@@ -68,7 +68,7 @@ namespace ProjetProgAvENSC1A.Views
             {
                 {
                     /* Nom de la ressource : */ "intro",
-                    /* Valeur de la ressource : */ "Bienvenue à toi, $userName ! C'est cool walah <color:blue>$qqch<color:black>"
+                    /* Valeur de la ressource : */ "Bienvenue à toi, $userName ! C'est cool walah <color value=blue>$qqch<color value=black>"
                     
                     /* 2 variables sont définies dans la chaine ci dessus : $userName et $qqch
                      * les valeurs par lesquelles les remplacer sont fournie par le paramètre pageModifiers
@@ -79,7 +79,7 @@ namespace ProjetProgAvENSC1A.Views
                 },
                 {
                     "test",
-                    "--> | <color:blue><input:[A-Za-z0-9]><color:black> | <--"
+                    "--> | <input regex=[A-Za-z0-9]> | <--"
                 },
             };
 
