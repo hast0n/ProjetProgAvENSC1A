@@ -22,6 +22,8 @@ using static System.String;
  
  //TODO: Colors attributes foreground & background
 
+ //TODO: /!\ prevent & feedback over use of input and selector on same page /!\
+
 
 namespace CliLayoutRenderTools
 {
