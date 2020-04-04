@@ -10,23 +10,27 @@ namespace ProjetProgAvENSC1A.Views
     {
         public LoginPage(
             Dictionary<string, string> sharedResources,
-            char splitChar)
+            char splitChar) : base(sharedResources)
         {
-            SharedResources = sharedResources;
-
-
             Layout = new List<string>()
             {
+
+                "3*emptyLine",
+                "appName",
                 "2*emptyLine",
+                
                 "topBar",
                 "2*[emptyLine]",
+                
                 "[loginHint]",
                 "2*[emptyLine]",
-                "[userHint]",
+                
                 "[userInput]",
-                "[emptyLine]",
-                "[pswHint]",
                 "[pswInput]",
+                
+                "2*[emptyLine]",
+                "[hitEnterHint]",
+
                 "2*[emptyLine]",
                 "botBar"
             };
@@ -39,26 +43,22 @@ namespace ProjetProgAvENSC1A.Views
                     "to access the application:"
                 },
                 {
-                    "userHint",
-                    "Enter Username :"
-                },
-                {
-                    "pswHint",
-                    "Enter Password :"
-                },
-                {
                     "userInput",
                     String.Join(splitChar, ""+
-                        "┌────────────┐",
-                        "│  <input regex=[A-Za-z0-9\\s] length=8>  │",
-                        "└────────────┘")
+                        "                   ┌────────────┐",
+                        "Enter Username :   │  <input regex=[A-Za-z0-9\\s] length=8>  │",
+                        "                   └────────────┘")
                 },
                 {
                     "pswInput",
                     String.Join(splitChar, ""+
-                        "┌────────────┐",
-                        "│  <input regex=[A-Za-z0-9] length=8>  │",
-                        "└────────────┘")
+                        "                   ┌────────────┐",
+                        "Enter Password :   │  <input regex=[A-Za-z0-9] length=8>  │",
+                        "                   └────────────┘")
+                },
+                {
+                    "hitEnterHint",
+                    "Press Enter to continue..."
                 }
             };
         }

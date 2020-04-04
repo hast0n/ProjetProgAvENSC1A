@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using CliLayoutRenderTools;
+using ProjetProgAvENSC1A.Models;
 using ProjetProgAvENSC1A.Views;
 
 namespace ProjetProgAvENSC1A
@@ -13,12 +15,31 @@ namespace ProjetProgAvENSC1A
             //RenderTests.Test();
 
             Renderer console = new Renderer() { FrameWidth = 70 };
+            
             console.SetDefaultResources();
+            console.AddVisualResources(new Dictionary<string, string>() {
+                {
+                    "appName", 
+                    "--- PROJECT MANAGER ---"
+                },
+                {
+                    "userStatus", 
+                    "$userStatus"
+                }
+            });
 
-            LoginPage view = new LoginPage(console.VisualResources, console.SplitChar);
+            //LoginPage logInView = new LoginPage(console.VisualResources, console.SplitChar);
 
-            console.Render(view);
+            //var loggingInfoDictionary = console.Render(logInView);
+
+
+
+            SelectorTestView selectorTestView = new SelectorTestView(console.VisualResources, console.SplitChar);
+
+            console.Render(selectorTestView);
         }
+
+
     }
 }
 

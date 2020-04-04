@@ -31,6 +31,7 @@ namespace ProjetProgAvENSC1A.Views
         public HomePage(
             Dictionary<string, string> sharedResources,
             Dictionary<string, string> pageModifiers)
+            :base(sharedResources)
         {
             // Rendre les paramètres accessibles à l'instance de la class mère ContentPage
             SharedResources = sharedResources;

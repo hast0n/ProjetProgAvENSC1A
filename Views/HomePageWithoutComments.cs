@@ -10,6 +10,7 @@ namespace ProjetProgAvENSC1A.Views
         public HomePageWithoutComments(
             Dictionary<string, string> sharedResources,
             Dictionary<string, string> pageModifiers)
+            :base(sharedResources)
         {
             SharedResources = sharedResources;
             PageModifiers = pageModifiers;

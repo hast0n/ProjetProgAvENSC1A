@@ -37,6 +37,13 @@ namespace CliLayoutRenderTools
 
 
 
+        public ContentPage(Dictionary<string, string> sharedResources = null)
+        {
+            SharedResources = sharedResources ?? new Dictionary<string, string>();
+        }
+
+
+
         public void Clear() => LocalResources = new Dictionary<string, string>();
 
         public void AddResource(string key, string value) => LocalResources.Add(key, value);

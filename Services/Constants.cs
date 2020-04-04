@@ -16,9 +16,16 @@ namespace ProjetProgAvENSC1A.Services
         public const string BACKSPACE = "\b";
 
         public const string TYPE = "type";
+        public const string INDEX = "index";
+        public const string TEXT = "text";
         public const string REPLACEMENT = "replacement";
         public const string REGEX = "regex";
         public const string LENGTH = "length";
         public const string VALUE = "value";
-        }
+        public const string SELECTED = "selected";
+        
+        
+        public const string SELECTOR_BACKWARD = "z";
+        public const string SELECTOR_FORWARD = "s";
+    }
 }

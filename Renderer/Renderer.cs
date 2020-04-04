@@ -71,7 +71,7 @@ namespace CliLayoutRenderTools
         {
             {
                 "any",
-                @"<(input|color|selector)[^\n\r\b<>]+>{1}"
+                @"<(input|color|selector)[^\t\n\r\b<>]+>{1}"
             },
             {
                 "color",
@@ -83,11 +83,15 @@ namespace CliLayoutRenderTools
                 //      -> length attr comes before regex attr
                 //      -> no regex attribute
                 "input",
-                @"<input(?: regex=([^\s]+)){1}(?: length=([0-9]{1,2}))?>{1}"
+                @"<input (?:regex=([^\s]+)){1}(?: length=([0-9]{1,2}))?>{1}"
             },
             {
+                // Every character is allowed in the text attribute
+                // as long as they do not include \t, \n, \r, \b, <, >
+                // as defined in the 'any' regex
                 "selector",
-                ""
+                @"<selector (?:value=([0-9]{1,2})){1} (?:text='([^\t\n\r<>]+)'){1}" +
+                    "(?: color=([a-zA-Z]+))?(?: (selected))?>"
             }
         }; 
 
@@ -112,7 +116,18 @@ namespace CliLayoutRenderTools
         public string PaddingString => new string(' ', FrameMargin);
         public string HorizontalBar => new string(HorizontalLineChar, FrameWidth - 2);
         public int WindowWidth => FrameWidth + FrameMargin* 2;
-        
+
+        public string ConsoleColorTheme
+        {
+            get => ConsoleBackgroundColors.First(kvp 
+                => kvp.Value == Console.BackgroundColor).Key;
+            set
+            {
+                Console.BackgroundColor = ConsoleBackgroundColors[value];
+                Console.ForegroundColor = ConsoleTextColors[value];
+            }
+        }
+
         private string Input => $"{Console.ReadKey().KeyChar}";
         #endregion
 
@@ -179,7 +194,7 @@ namespace CliLayoutRenderTools
             };
 
             // Initialize default viewing experience
-            SetConsoleColorScheme("black");
+            ConsoleColorTheme = "black";
         }
 
         private void SetWindowSize()
@@ -194,25 +209,24 @@ namespace CliLayoutRenderTools
             {
                 {
                     "topBar",
-                    $"{PaddingString}┌{HorizontalBar}┐"
+                    $"┌{HorizontalBar}┐"
                 },
                 {
                     "botBar",
-                    $"{PaddingString}└{HorizontalBar}┘"
+                    $"└{HorizontalBar}┘"
                 },
                 {
                     "emptyLine",
                     Empty
                 },
+                {
+                    "selectorHint",
+                    $"Highlight with {Constants.SELECTOR_BACKWARD.ToUpper()} and " +
+                    $"{Constants.SELECTOR_FORWARD.ToUpper()} & press <Enter> to confirm..."
+                }
             };
         }
-
-        public void SetConsoleColorScheme(string color)
-        {
-            Console.BackgroundColor = ConsoleBackgroundColors[color];
-            Console.ForegroundColor = ConsoleTextColors[color];
-        }
-
+        
         public void ResetConsoleColors()
         {
             Console.BackgroundColor = _defaultColors[0];
@@ -239,7 +253,7 @@ namespace CliLayoutRenderTools
         public ImmutableDictionary<int, Dictionary<string ,string>> Render(ContentPage page)
         {
             SetWindowSize();
-            SetConsoleColorScheme("black");
+            ConsoleColorTheme ="black";
 
             var userInputs = LaunchAndWaitForInput(page);
 
@@ -369,7 +383,7 @@ namespace CliLayoutRenderTools
             // Frame a line to match the game outside border
 
             Regex r = new Regex(RegexPatterns[Constants.ANY]);
-            string trimmedLine = line.Trim();
+            string trimmedLine = line.TrimEnd();
             string pseudoLine = trimmedLine;
             var match = r.Match(pseudoLine);
 
@@ -389,6 +403,13 @@ namespace CliLayoutRenderTools
                     replacement = new string(
                         char.Parse(DefaultInputPlaceholder),
                         int.Parse(length));
+                }
+                else if (match.Groups[1].Value.Equals(Constants.SELECTOR))
+                {
+                    var groups = new Regex(RegexPatterns[Constants.SELECTOR])
+                        .Match(pseudoLine).Groups;
+
+                    replacement = groups[2].Value;
                 }
                 else
                 {
@@ -433,70 +454,124 @@ namespace CliLayoutRenderTools
         {
             StringBuilder pageString = DumpScreen(page, out var modifierDictionary);
             
-            int modIndex = modifierDictionary.GetModifierIndex();
-
-            RenderScreen(pageString, modifierDictionary);
+            var res = new Dictionary<int, Dictionary<string, string>>()
+                {{ 0, new Dictionary<string, string>() {{ Constants.TYPE, null }} }}
+                .ToImmutableDictionary();
             
-            if (modIndex != 0)
+            // Iterate over modifiers and set them
+            if (modifierDictionary.ContainsField(Constants.INPUT))
             {
-                // Iterate over modifiers and set them
-                while (modifierDictionary.Count > 0)
-                {
-                    // Prevent triggering for b, r or n in \b, \r or \n
-                    string currentRegexPattern = $"^{modifierDictionary[modIndex][Constants.REGEX]}$";
-                    string input = Input;
+                int inputIndex = modifierDictionary.GetInputFieldIndex();
+                
+                HandleInput(modifierDictionary, inputIndex, pageString);
 
-                    while (!Regex.IsMatch(input, currentRegexPattern))
-                    {
-                        Console.Write(Constants.BACKSPACE);
+                var kvpEnumerable = modifierDictionary.Where(kvp =>
+                    kvp.Value[Constants.TYPE].Equals(Constants.INPUT));
+                
+                res = kvpEnumerable.ToImmutableDictionary();
+            }
+            else if (modifierDictionary.ContainsField(Constants.SELECTOR))
+            {
+                modifierDictionary.RemoveSelectedDuplicate();
 
-                        if (input.Equals(Constants.BACKSPACE) && modifierDictionary.HasSetModifiers())
-                        {
-                            modifierDictionary.WipeLastInput();
-                            break;
-                        }
+                HandleSelector(modifierDictionary, pageString);
 
-                        if (input.Equals(Constants.CARRIAGE_RETURN) && modifierDictionary.GetFirstUnsetInput() == 0)
-                        {
-                            var kvpEnumerable = modifierDictionary.Where(kvp => 
-                                    kvp.Value[Constants.TYPE].Equals(Constants.INPUT));
-                            return kvpEnumerable.ToImmutableDictionary();
-                        }
+                var kvpEnumerable = modifierDictionary.Where(kvp =>
+                    kvp.Value[Constants.TYPE].Equals(Constants.SELECTOR));
 
-                        input = Input;
-                    }
-
-                    if (!new string[] {Constants.BACKSPACE, Constants.CARRIAGE_RETURN}.Contains(input))
-                    {
-                        int length = int.Parse(modifierDictionary[modIndex][Constants.LENGTH]);
-                        string userInput = modifierDictionary[modIndex][Constants.VALUE];
-                        string res = $"{userInput}{input}";
-
-                        modifierDictionary[modIndex][Constants.VALUE] = $"{userInput}{input}"
-                            [.. (res.Length > length ? ^1 : ^0)];
-                    }
-
-                    RenderScreen(pageString, modifierDictionary);
-
-                    modIndex = modifierDictionary.GetModifierIndex();
-                }
+                res = kvpEnumerable.ToImmutableDictionary();
             }
 
             ResetConsoleColors();
-
-            return new Dictionary<int, Dictionary<string, string>>()
-            {
-                {
-                    0,
-                    new Dictionary<string, string>()
-                    {
-                        {
-                            Constants.TYPE, null
-                        }
-                    }
-                }
-            }.ToImmutableDictionary();
+            
+            return res;
         }
+
+        private void HandleSelector(
+            Dictionary<int, Dictionary<string, string>> modifierDictionary, 
+            StringBuilder pageString)
+        {
+            RenderScreen(pageString, modifierDictionary);
+
+            int index = modifierDictionary.GetSelectedIndex();
+            int prevIndex = index;
+
+            string input = Input.ToLower();
+
+            while (!input.Equals(Constants.CARRIAGE_RETURN))
+            {
+                modifierDictionary[index][Constants.SELECTED] = bool.FalseString;
+                
+                if (input.Equals(Constants.SELECTOR_BACKWARD))
+                {
+                    index = modifierDictionary.GetPreviousSelectorIndex(index);
+                }
+                else if (input.Equals(Constants.SELECTOR_FORWARD))
+                {
+                    index = modifierDictionary.GetNextSelectorIndex(index);
+                }
+
+                index = index != 0 ? index : prevIndex;
+
+                modifierDictionary[index][Constants.SELECTED] = bool.TrueString;
+                
+                if (!index.Equals(prevIndex)) RenderScreen(pageString, modifierDictionary);
+
+                Console.Write(Constants.BACKSPACE);
+
+                input = Input.ToLower();
+
+                prevIndex = index;
+            }
+        }
+
+        private void HandleInput(
+            Dictionary<int, Dictionary<string, string>> modifierDictionary,
+            int inputIndex, StringBuilder pageString)
+        {
+            RenderScreen(pageString, modifierDictionary);
+
+            while (modifierDictionary.Count > 0)
+            {
+                // Prevent triggering for b, r or n in \b, \r or \n
+                string currentRegexPattern = $"^{modifierDictionary[inputIndex][Constants.REGEX]}$";
+                string input = Input;
+                
+                while (!Regex.IsMatch(input, currentRegexPattern))
+                {
+                    Console.Write(Constants.BACKSPACE);
+
+                    if (input.Equals(Constants.BACKSPACE) && modifierDictionary.HasSetModifiers())
+                    {
+                        modifierDictionary.WipeLastInput();
+                        break;
+                    }
+
+                    if (input.Equals(Constants.CARRIAGE_RETURN) && modifierDictionary.GetFirstUnsetInput() == 0)
+                    {
+                        return;
+                    }
+
+                    input = Input;
+                }
+
+                if (!new string[] { Constants.BACKSPACE, Constants.CARRIAGE_RETURN }.Contains(input))
+                {
+                    int length = int.Parse(modifierDictionary[inputIndex][Constants.LENGTH]);
+                    string userInput = modifierDictionary[inputIndex][Constants.VALUE];
+                    string res = $"{userInput}{input}";
+
+                    modifierDictionary[inputIndex][Constants.VALUE] = $"{userInput}{input}"
+                        [..(res.Length > length ? ^1 : ^0)];
+                }
+
+                RenderScreen(pageString, modifierDictionary);
+
+                inputIndex = modifierDictionary.GetInputFieldIndex();
+            }
+        }
+
+
 
         private StringBuilder DumpScreen(ContentPage page,
             out Dictionary<int, Dictionary<string, string>> modifierDictionary)
@@ -587,11 +662,42 @@ namespace CliLayoutRenderTools
                             break;
 
                         case Constants.SELECTOR:
+
+                            replacement = group[2].Value;
+
+                            modifierDictionary[modIndex] = new Dictionary<string, string>()
+                            {
+                                {
+                                    Constants.TYPE,
+                                    Constants.SELECTOR
+                                },
+                                {
+                                    Constants.INDEX,
+                                    group[1].Value
+                                },
+                                {
+                                    Constants.TEXT,
+                                    group[2].Value
+                                },
+                                {
+                                    Constants.COLOR,
+                                    group[3].Value == Empty
+                                        ? "white"
+                                        : group[3].Value
+                                },
+                                {
+                                    Constants.SELECTED, 
+                                    group[4].Value == Constants.SELECTED
+                                        ? Boolean.TrueString
+                                        : Boolean.FalseString
+                                }
+                            };
+
                             break;
                     }
 
-                    // seems to need instance of Regex to use occurence replacement quantifier...
                     computedLine = r.Replace(computedLine, replacement, 1);
+                    
                     // search again for any new match (new input)
                     match = r.Match(computedLine);
                 }
@@ -610,11 +716,49 @@ namespace CliLayoutRenderTools
             Console.Clear();
             // Set the index to which the frame has been rendered
             int renderedPartIndex = 0;
-
+            
             foreach (var kvp in modifierDictionary
                 .OrderBy(kvp => kvp.Key))
             {
-                if (kvp.Value[Constants.TYPE].Equals(Constants.COLOR))
+                string type = kvp.Value[Constants.TYPE];
+
+                if (type.Equals(Constants.SELECTOR))
+                {
+                    // Entering selector context
+
+                    // Extract string before color modifier
+                    string leftString = screenBuilder.ToString()
+                        .Substring(renderedPartIndex,
+                            kvp.Key - renderedPartIndex);
+                    // Write it
+                    Console.Write(leftString);
+
+                    bool isSelected = kvp.Value[Constants.SELECTED].Equals(bool.TrueString);
+
+                    // Save current color theme
+                    string currentColorTheme = ConsoleColorTheme;
+
+                    if (isSelected)
+                    {
+                        // Change console color
+                        ConsoleColorTheme = kvp.Value[Constants.COLOR];
+                    }
+                    
+                    // Write selector text
+                    string text = kvp.Value[Constants.TEXT];
+                    Console.Write(text);
+
+                    // Not really necessary here...
+                    if (isSelected)
+                    {
+                        // Rollback color theme previous
+                        ConsoleColorTheme = currentColorTheme;
+                    }
+
+                    // Override rendering index 
+                    renderedPartIndex = kvp.Key + text.Length;
+                }
+                else if (type.Equals(Constants.COLOR))
                 {
                     // Entering color context
 
@@ -625,7 +769,7 @@ namespace CliLayoutRenderTools
                     // Write it
                     Console.Write(leftString);
                     // Change console color
-                    SetConsoleColorScheme(kvp.Value[Constants.VALUE]);
+                    ConsoleColorTheme = kvp.Value[Constants.VALUE];
                     // Set rendering index
                     renderedPartIndex = kvp.Key;
                 }
