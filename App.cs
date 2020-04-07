@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using CliLayoutRenderTools;
+using ProjetProgAvENSC1A.Controllers;
 using ProjetProgAvENSC1A.Models;
 using ProjetProgAvENSC1A.Views;
 
 namespace ProjetProgAvENSC1A
 {
+
+    //TODO: Add following behaviour :
+    // --> Instantiate renderer
+    // --> Instantiate controllers
+    // --> compile them in a queue
+    // --> start render queue
+
     class App
     {
         static void Main(string[] args)
         {
-            // Pour le tuto : utiliser la ligne suivante et commenter le rester
-            // Les fichiers se trouvent dans .\Renderer\testScript.cs et .\Views\HomePage.cs
-            //RenderTests.Test();
-
             Renderer console = new Renderer() { FrameWidth = 70 };
             
             console.SetDefaultResources();
@@ -28,9 +32,10 @@ namespace ProjetProgAvENSC1A
                 }
             });
 
-            //LoginPage logInView = new LoginPage(console.VisualResources, console.SplitChar);
+            
+            User user = LoginController.Authenticate();
 
-            //var loggingInfoDictionary = console.Render(logInView);
+
 
 
 
@@ -38,8 +43,6 @@ namespace ProjetProgAvENSC1A
 
             console.Render(selectorTestView);
         }
-
-
     }
 }
 

@@ -6,9 +6,9 @@ using CliLayoutRenderTools;
 
 namespace ProjetProgAvENSC1A.Views
 {
-    class LoginPage : ContentPage
+    class LoginView : ContentView
     {
-        public LoginPage(
+        public LoginView(
             Dictionary<string, string> sharedResources,
             char splitChar) : base(sharedResources)
         {
@@ -45,16 +45,16 @@ namespace ProjetProgAvENSC1A.Views
                 {
                     "userInput",
                     String.Join(splitChar, ""+
-                        "                   ┌────────────┐",
-                        "Enter Username :   │  <input regex=[A-Za-z0-9\\s] length=8>  │",
-                        "                   └────────────┘")
+                        "                   ┌────────────────┐",
+                        "Enter Username :   │  <input regex=[A-Za-z0-9\\s] length=12>  │",
+                        "                   └────────────────┘")
                 },
                 {
                     "pswInput",
                     String.Join(splitChar, ""+
-                        "                   ┌────────────┐",
-                        "Enter Password :   │  <input regex=[A-Za-z0-9] length=8>  │",
-                        "                   └────────────┘")
+                        "                   ┌────────────────┐",
+                        "Enter Password :   │  <input regex=[A-Za-z0-9] length=12>  │",
+                        "                   └────────────────┘")
                 },
                 {
                     "hitEnterHint",

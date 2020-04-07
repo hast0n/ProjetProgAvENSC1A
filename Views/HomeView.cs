@@ -12,7 +12,7 @@ namespace ProjetProgAvENSC1A.Views
      * et qui dérive nécessairement de ContentPage
      */
 
-    class HomePage : ContentPage
+    class HomeView : ContentView
     {
 
         /*
@@ -28,7 +28,7 @@ namespace ProjetProgAvENSC1A.Views
          * ContentPage nécessite une instance pour posséder ces attributs
          */
 
-        public HomePage(
+        public HomeView(
             Dictionary<string, string> sharedResources,
             Dictionary<string, string> pageModifiers)
             :base(sharedResources)

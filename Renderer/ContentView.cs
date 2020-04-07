@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace CliLayoutRenderTools
 {
-    public class ContentPage
+    public class ContentView
     {
         // Define default variable pattern regex
         public static readonly string VarPatternRegex = @"\$([a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*)";
@@ -37,7 +37,7 @@ namespace CliLayoutRenderTools
 
 
 
-        public ContentPage(Dictionary<string, string> sharedResources = null)
+        public ContentView(Dictionary<string, string> sharedResources = null)
         {
             SharedResources = sharedResources ?? new Dictionary<string, string>();
         }

@@ -5,7 +5,7 @@ using CliLayoutRenderTools;
 
 namespace ProjetProgAvENSC1A.Views
 {
-    class HomePageWithoutComments : ContentPage
+    class HomePageWithoutComments : ContentView
     {
         public HomePageWithoutComments(
             Dictionary<string, string> sharedResources,

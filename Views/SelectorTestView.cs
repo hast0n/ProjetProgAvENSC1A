@@ -5,7 +5,7 @@ using CliLayoutRenderTools;
 
 namespace ProjetProgAvENSC1A.Views
 {
-    class SelectorTestView : ContentPage
+    class SelectorTestView : ContentView
     {
         public SelectorTestView(
             Dictionary<string, string> sharedResources,

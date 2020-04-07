@@ -252,17 +252,17 @@ namespace CliLayoutRenderTools
         
 
 
-        public ImmutableDictionary<int, Dictionary<string ,string>> Render(ContentPage page)
+        public ImmutableDictionary<int, Dictionary<string ,string>> Render(ContentView view)
         {
             SetWindowSize();
             ConsoleColorTheme ="black";
 
-            var userInputs = LaunchAndWaitForInput(page);
+            var userInputs = LaunchAndWaitForInput(view);
 
             return userInputs;
         }
 
-        public List<string> GetViewContent(ContentPage view)
+        public List<string> GetViewContent(ContentView view)
         {
             var resources = view.SerializedResources;
             List<string> viewContent = new List<string>();
@@ -452,9 +452,9 @@ namespace CliLayoutRenderTools
         
 
 
-        private ImmutableDictionary<int, Dictionary<string, string>> LaunchAndWaitForInput(ContentPage page)
+        private ImmutableDictionary<int, Dictionary<string, string>> LaunchAndWaitForInput(ContentView view)
         {
-            StringBuilder pageString = DumpScreen(page, out var modifierDictionary);
+            StringBuilder pageString = DumpScreen(view, out var modifierDictionary);
             
             var res = new Dictionary<int, Dictionary<string, string>>()
                 {{ 0, new Dictionary<string, string>() {{ Constants.TYPE, null }} }}
@@ -575,7 +575,7 @@ namespace CliLayoutRenderTools
 
 
 
-        private StringBuilder DumpScreen(ContentPage page,
+        private StringBuilder DumpScreen(ContentView view,
             out Dictionary<int, Dictionary<string, string>> modifierDictionary)
         {
             // Read screen to extract modifier indexes
@@ -584,7 +584,7 @@ namespace CliLayoutRenderTools
 
             StringBuilder output = new StringBuilder();
 
-            var resources = GetViewContent(page);
+            var resources = GetViewContent(view);
 
             foreach (string line in resources)
             {

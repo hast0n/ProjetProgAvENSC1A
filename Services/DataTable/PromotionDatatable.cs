@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ProjetProgAvENSC1A.Services
+namespace ProjetProgAvENSC1A.Services.DataTable
 {
-    class Course
+    class PromotionDatatable
     {
     }
 }

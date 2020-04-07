@@ -41,7 +41,7 @@ namespace CliLayoutRenderTools
             //      - renderer.VisualResources : les ressources globales du renderer
             //      - un dictionnaire <string, string> qui défini les valeurs des variables
             //        qui sont définies dans HomePage
-            var homePage = new HomePage(
+            var homePage = new HomeView(
                 renderer.VisualResources,
                 new Dictionary<string, string>()
                 {
