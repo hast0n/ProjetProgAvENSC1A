@@ -1,24 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ProjetProgAvENSC1A.Services;
 
 namespace ProjetProgAvENSC1A.Models
 {
-    class Deliverable
+    class Deliverable : EntryType
     {
-        public enum TypeDeliverable
-        {
-            SiteWeb,
-            Rapport,
-            MaquetteFonctionnelle,
-            Documentation,
-            CahierDesCharges,
-            ApplicationLogicielle,
-            Autre
-        }
-
-        public TypeDeliverable[] Livrable { get; private set; }
-        public string DeliverableTypeInfo { get; private set; }
-
+        public Constants.TypeDeliverable Type { get; private set; }
+        public string Information { get; private set; }
     }
 }

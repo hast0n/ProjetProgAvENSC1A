@@ -8,6 +8,20 @@ namespace ProjetProgAvENSC1A.Services
 {
     interface IDataTable
     {
-        public abstract bool AddEntry(object entry);
+        public List<object> Entries { get; }
+
+        public object this [int index] => Entries[index];
+
+
+        public bool AddEntry(object entry);
+
+        public bool UpdateEntry(object entry);
+
+        public bool RemoveEntry(string id);
+
+        public List<object> LoadFromStorage();
+
+        public bool WriteToStorage();
+
     }
 }

@@ -21,7 +21,8 @@ namespace ProjetProgAvENSC1A
             Renderer console = new Renderer() { FrameWidth = 70 };
             
             console.SetDefaultResources();
-            console.AddVisualResources(new Dictionary<string, string>() {
+            console.AddVisualResources(new Dictionary<string, string>()
+            {
                 {
                     "appName", 
                     "--- PROJECT MANAGER ---"
@@ -33,15 +34,16 @@ namespace ProjetProgAvENSC1A
             });
 
             
-            User user = LoginController.Authenticate();
 
 
 
+            //User user = LoginController.Authenticate();
+            
+            //SelectorTestView selectorTestView = new SelectorTestView(console.VisualResources, console.SplitChar);
+
+            //console.Render(selectorTestView);
 
 
-            SelectorTestView selectorTestView = new SelectorTestView(console.VisualResources, console.SplitChar);
-
-            console.Render(selectorTestView);
         }
     }
 }

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ProjetProgAvENSC1A.Models
+namespace ProjetProgAvENSC1A.Services
 {
-    class Course : EntryType
+    class DataBase
     {
-        //
     }
 }

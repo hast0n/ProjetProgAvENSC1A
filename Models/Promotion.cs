@@ -4,8 +4,7 @@ using System.Text;
 
 namespace ProjetProgAvENSC1A.Models
 {
-    class Course : EntryType
+    class Promotion : EntryType
     {
-        //
     }
 }
