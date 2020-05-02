@@ -6,7 +6,7 @@ namespace ProjetProgAvENSC1A.Models
 {
     class Student : Person 
     {
-        public string Student_ID { get; private set; }
+        public string Student_ID { get; set; }
 
         public void PartOfPromotion()
         {

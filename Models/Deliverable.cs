@@ -7,7 +7,7 @@ namespace ProjetProgAvENSC1A.Models
 {
     class Deliverable : EntryType
     {
-        public Constants.TypeDeliverable Type { get; private set; }
-        public string Information { get; private set; }
+        public Constants.TypeDeliverable Type { get; set; }
+        public string Information { get; set; }
     }
 }

@@ -7,7 +7,7 @@ namespace ProjetProgAvENSC1A.Models
 {
     class FormYear : EntryType
     {
-        public Constants.GradeYear GradeName{ get; private set; }
-        public List<Course> Courses { get; private set;}
+        public Constants.GradeYear GradeName{ get; set; }
+        public List<Course> Courses { get; set;}
     }
 }

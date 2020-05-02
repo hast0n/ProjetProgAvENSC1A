@@ -8,10 +8,10 @@ namespace ProjetProgAvENSC1A.Models
 {
     class Person : EntryType
     {
-        public string FirstName { get; private set; }
-        public string LastName { get; private set; }
-        public int Age { get; private set; }
-        public Constants.Gender Sexe { get; private set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public int Age { get; set; }
+        public Constants.Gender Sexe { get; set; }
 
         public void InvolvedInProject() 
         { 
