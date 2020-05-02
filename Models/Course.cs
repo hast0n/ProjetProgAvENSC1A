@@ -6,6 +6,7 @@ namespace ProjetProgAvENSC1A.Models
 {
     class Course : EntryType
     {
-        //
+        public string Name { get; private set; }
+        public List<Teacher> Teachers { get; private set; }
     }
 }

@@ -16,6 +16,7 @@ namespace ProjetProgAvENSC1A.Models
         public List<Promotion> Promotions { get; private set; }
 
         //public DateTime Duration => EndDate - StartDate;
-        
+        public TimeSpan Duration => EndDate - StartDate; //Form : NbDays.NbHours:NbMinutes:NbSeconds Write Duration.Days for collect number of days
+
     }
 }

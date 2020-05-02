@@ -38,5 +38,19 @@ namespace ProjetProgAvENSC1A.Services
             ApplicationLogicielle,
             Autre
         }
+
+        public enum Gender
+        {
+            Féminin,
+            Masculin, 
+            Autre
+        }
+
+        public enum GradeYear
+        {
+            Y1,
+            Y2,
+            Y3
+        }
     }
 }
