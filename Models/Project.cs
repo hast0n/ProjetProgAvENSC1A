@@ -21,6 +21,7 @@ namespace ProjetProgAvENSC1A.Models
 
         [JsonIgnore]
         public TimeSpan Duration => EndDate - StartDate;
+        //Form : NbDays.NbHours:NbMinutes:NbSeconds Write Duration.Days for collect number of days
 
         [JsonIgnore]
         public List<Promotion> Promotions { get; set; }

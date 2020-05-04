@@ -23,12 +23,12 @@ namespace CliLayoutRenderTools
             // on veut un joli encadrement
             renderer.SetDefaultResources();
 
-            // Ici c'est pour ajouter au renderer des ressources générales, à partagées.
+            // Ici c'est pour ajouter au renderer des ressources générales, à partager.
             renderer.AddVisualResources(new Dictionary<string, string>()
             {
                 {
                     // Ici c'est presque la même ressource que dans HomePage.cs
-                    // a l'exception qu'il n'y a pas de variables ($xxxx comme en php) dedans
+                    // a l'exception qu'il n'y a pas de variables ($xxxx comme en php) dedans.
                     // Ce n'est pas cette ressource qui sera utilisée par HomePage
                     // puisqu'on lui a défini sa propre version
                     "intro",

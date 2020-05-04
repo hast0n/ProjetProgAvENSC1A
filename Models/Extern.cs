@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ProjetProgAvENSC1A.Models
 {
-    class Extern
+    class Extern : Person
     {
     }
 }

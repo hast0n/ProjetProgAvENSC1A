@@ -11,8 +11,8 @@ namespace ProjetProgAvENSC1A.Services
     {
         public List<EntryType> Entries { get; }
 
-        public object this [int index] => Entries[index];
-        public object this [string uuid] => Entries.Find(e => e.UUID.Equals(uuid));
+        public EntryType this [int index] => Entries[index];
+        public EntryType this [string uuid] => Entries.Find(e => e.UUID.Equals(uuid));
 
 
         public bool AddEntry(EntryType entry);

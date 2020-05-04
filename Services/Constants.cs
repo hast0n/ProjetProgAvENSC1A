@@ -28,6 +28,13 @@ namespace ProjetProgAvENSC1A.Services
         public const string SELECTOR_BACKWARD = "z";
         public const string SELECTOR_FORWARD = "s";
 
+        public const string PROJECT_FILEPATH = @"data\projects.json";
+        public const string PERSON_FILEPATH = @"data\persons.json";
+        public const string COURSE_FILEPATH = @"data\courses.json";
+        public const string FORMYEAR_FILEPATH = @"data\formyears.json";
+        public const string PROMOTION_FILEPATH = @"data\promotions.json";
+        
+
         public enum TypeDeliverable
         {
             SiteWeb,
@@ -41,7 +48,7 @@ namespace ProjetProgAvENSC1A.Services
 
         public enum Gender
         {
-            Féminin,
+            Feminin,
             Masculin, 
             Autre
         }

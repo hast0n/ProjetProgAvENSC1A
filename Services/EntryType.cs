@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ProjetProgAvENSC1A.Models
 {
-    class EntryType
+    public class EntryType
     {
         public string UUID { get; private set; }
 

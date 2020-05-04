@@ -8,15 +8,13 @@ namespace ProjetProgAvENSC1A.Services.DataTables
 {
     class ProjectDataTable : IDataTable
     {
-        private string filePath = @"data\projects.json";
+        private string filePath = Constants.PROJECT_FILEPATH;
 
         public List<EntryType> Entries { get; }
-        public List<Project> TempEntries { get; private set; }
 
         public ProjectDataTable()
         {
             Entries = new List<EntryType>();
-            TempEntries = new List<Project>();
         }
 
         public bool AddEntry(EntryType entry)
@@ -32,7 +30,6 @@ namespace ProjetProgAvENSC1A.Services.DataTables
 
         public bool UpdateEntry(EntryType oldEntry, EntryType newEntry)
         {
-            
             throw new NotImplementedException();
         }
 
@@ -49,18 +46,18 @@ namespace ProjetProgAvENSC1A.Services.DataTables
 
         public bool LoadFromStorage()
         {
+            var tempEntries = new List<Project>();
+
             try
             {
-                Directory.CreateDirectory("data");
-
                 using FileStream fs = File.Open(filePath, FileMode.OpenOrCreate);
                 var fileDump = JsonSerializer.DeserializeAsync<List<Project>>(fs);
 
-                TempEntries = fileDump.Result;
+                tempEntries = fileDump.Result;
             }
             catch (JsonException)
             {
-                TempEntries = new List<Project>();
+                tempEntries = new List<Project>();
             }
             catch (Exception)
             {
@@ -68,7 +65,7 @@ namespace ProjetProgAvENSC1A.Services.DataTables
             }
             finally
             {
-                TempEntries.ForEach(entry =>
+                tempEntries.ForEach(entry =>
                 {
                     entry.Courses = entry.JsonCoursUUID.ConvertAll(
                         uuid => (Course) App.DB[DBTable.Courses][uuid]);
@@ -80,7 +77,7 @@ namespace ProjetProgAvENSC1A.Services.DataTables
                         uuid => (Person) App.DB[DBTable.Person][uuid]);
                 });
 
-                Entries.AddRange(TempEntries);
+                Entries.AddRange(tempEntries);
             }
 
             return true;
@@ -90,8 +87,6 @@ namespace ProjetProgAvENSC1A.Services.DataTables
         {
             try
             {
-                Directory.CreateDirectory("data");
-
                 Entries.ForEach(entry =>
                 {
                     Project p = (Project) entry;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using ProjetProgAvENSC1A.Models;
@@ -30,15 +31,23 @@ namespace ProjetProgAvENSC1A.Services
             {
                 {DBTable.Project, new ProjectDataTable()},
                 {DBTable.Courses, new CourseDataTable()},
-                //{DBTable.FormYear, new FormYearDataTable()},
+                {DBTable.FormYear, new FormYearDataTable()},
                 {DBTable.Person, new PersonDataTable()},
                 {DBTable.Promotion, new PromotionDataTable()},
-                //{DBTable.User, new UserDataTable()},
+                {DBTable.User, new UserDataTable()},
             };
         }
 
-        public bool Load() => _data.All(keyValuePair => keyValuePair.Value.LoadFromStorage());
+        public bool Load()
+        {
+            Directory.CreateDirectory("data");
+            return _data.All(keyValuePair => keyValuePair.Value.LoadFromStorage());
+        }
 
-        public bool Persist() => _data.All(keyValuePair => keyValuePair.Value.WriteToStorage());
+        public bool Persist()
+        {
+            Directory.CreateDirectory("data");
+            return _data.All(keyValuePair => keyValuePair.Value.WriteToStorage());
+        } 
     }
 }
