@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using ProjetProgAvENSC1A.Models;
 
 namespace ProjetProgAvENSC1A.Services.DataTables
@@ -11,13 +13,19 @@ namespace ProjetProgAvENSC1A.Services.DataTables
     {
         private const string filePath = Constants.PERSON_FILEPATH;
 
-        public List<EntryType> Entries { get; }
+        private readonly List<EntryType> _entries;
+        public List<EntryType> Entries => _entries.ToList(); // returns a copy of the entry list
+
+        public PersonDataTable()
+        {
+            _entries = new List<EntryType>();
+        }
 
         public bool AddEntry(EntryType entry)
         {
             try
             {
-                Entries.Add(entry);
+                _entries.Add(entry);
             }
             catch (Exception) { return false; }
 
@@ -33,20 +41,20 @@ namespace ProjetProgAvENSC1A.Services.DataTables
         {
             try
             {
-                Entries.RemoveAll(entry => entry.UUID.Equals(uuid));
+                _entries.RemoveAll(entry => entry.UUID.Equals(uuid));
             }
             catch (Exception) { return false; }
 
             return true;
         }
 
-        public bool LoadFromStorage()
+        public async Task<bool> LoadFromStorage()
         {
             var tempEntries = new List<Person>();
 
             try
             {
-                using FileStream fs = File.Open(filePath, FileMode.OpenOrCreate);
+                await using FileStream fs = File.Open(filePath, FileMode.OpenOrCreate);
                 var fileDump = JsonSerializer.DeserializeAsync<List<Person>>(fs);
 
                 tempEntries = fileDump.Result;
@@ -62,24 +70,36 @@ namespace ProjetProgAvENSC1A.Services.DataTables
             }
             finally
             {
-                Entries.AddRange(tempEntries);
+                _entries.AddRange(tempEntries);
             }
 
             return true;
         }
 
-        public bool WriteToStorage()
+        public async Task<bool> WriteToStorage()
         {
             try
             {
-                using FileStream fs = File.Open(filePath, FileMode.Truncate);
+                await using FileStream fs = File.Open(filePath, FileMode.Truncate);
 
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 options.Converters.Add(new PersonConverter());
 
                 var personEntries = Entries.ConvertAll(entry => (Person)entry);
 
-                JsonSerializer.SerializeAsync(fs, personEntries, options);
+                await JsonSerializer.SerializeAsync(fs, personEntries, options);
+            }
+            catch (Exception) { return false; }
+
+            return true;
+        }
+
+        public bool DropContent()
+        {
+            try
+            {
+                _entries.Clear();
+                WriteToStorage();
             }
             catch (Exception) { return false; }
 

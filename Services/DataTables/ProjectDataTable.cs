@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using ProjetProgAvENSC1A.Models;
 
 namespace ProjetProgAvENSC1A.Services.DataTables
@@ -9,19 +11,20 @@ namespace ProjetProgAvENSC1A.Services.DataTables
     class ProjectDataTable : IDataTable
     {
         private string filePath = Constants.PROJECT_FILEPATH;
-
-        public List<EntryType> Entries { get; }
+        
+        private readonly List<EntryType> _entries;
+        public List<EntryType> Entries => _entries.ToList(); // returns a copy of the entry list
 
         public ProjectDataTable()
         {
-            Entries = new List<EntryType>();
+            _entries = new List<EntryType>();
         }
 
         public bool AddEntry(EntryType entry)
         {
             try
             {
-                Entries.Add(entry);
+                _entries.Add(entry);
             }
             catch (Exception) { return false; }
 
@@ -37,20 +40,20 @@ namespace ProjetProgAvENSC1A.Services.DataTables
         {
             try
             {
-                Entries.RemoveAll(entry => entry.UUID.Equals(uuid));
+                _entries.RemoveAll(entry => entry.UUID.Equals(uuid));
             }
             catch (Exception) { return false; }
 
             return true;
         }
 
-        public bool LoadFromStorage()
+        public async Task<bool> LoadFromStorage()
         {
             var tempEntries = new List<Project>();
 
             try
             {
-                using FileStream fs = File.Open(filePath, FileMode.OpenOrCreate);
+                await using FileStream fs = File.Open(filePath, FileMode.OpenOrCreate);
                 var fileDump = JsonSerializer.DeserializeAsync<List<Project>>(fs);
 
                 tempEntries = fileDump.Result;
@@ -77,34 +80,45 @@ namespace ProjetProgAvENSC1A.Services.DataTables
                         uuid => (Person) App.DB[DBTable.Person][uuid]);
                 });
 
-                Entries.AddRange(tempEntries);
+                _entries.AddRange(tempEntries);
             }
 
             return true;
         }
 
-        public bool WriteToStorage()
+        public async Task<bool> WriteToStorage()
         {
+            var tempEntries = Entries.ConvertAll(entry => (Project)entry);
+
             try
             {
-                Entries.ForEach(entry =>
+                tempEntries.ForEach(entry =>
                 {
-                    Project p = (Project) entry;
-
-                    p.JsonCoursUUID = p.Courses.ConvertAll(course => course.UUID);
-                    p.JsonPersUUID = p.Contributors.ConvertAll(pers => pers.UUID);
-                    p.JsonPromUUID = p.Promotions.ConvertAll(prom => prom.UUID);
+                    entry.JsonCoursUUID = entry.Courses.ConvertAll(course => course.UUID);
+                    entry.JsonPersUUID = entry.Contributors.ConvertAll(pers => pers.UUID);
+                    entry.JsonPromUUID = entry.Promotions.ConvertAll(prom => prom.UUID);
                 });
 
-                using FileStream fs = File.Open(filePath, FileMode.Truncate);
+                await using FileStream fs = File.Open(filePath, FileMode.Truncate);
 
                 var options = new JsonSerializerOptions { WriteIndented = true };
-                var projectEntries = Entries.ConvertAll(entry => (Project) entry);
 
-                JsonSerializer.SerializeAsync(fs, projectEntries, options);
+                await JsonSerializer.SerializeAsync(fs, tempEntries, options);
             }
             catch (Exception) { return false; }
             
+            return true;
+        }
+
+        public bool DropContent()
+        {
+            try
+            {
+                _entries.Clear();
+                WriteToStorage();
+            }
+            catch (Exception) { return false; }
+
             return true;
         }
     }

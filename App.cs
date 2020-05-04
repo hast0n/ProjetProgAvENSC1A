@@ -41,7 +41,7 @@ namespace ProjetProgAvENSC1A
         {
 
             #region define persons (7)
-            Teacher t1 = (Teacher) new Person()
+            Teacher t1 = new Teacher()
             {
                 FirstName = "Jean",
                 LastName = "David",
@@ -49,7 +49,7 @@ namespace ProjetProgAvENSC1A
                 Gender = Constants.Gender.Masculin
             };
             
-            Teacher t2 = (Teacher) new Person()
+            Teacher t2 = new Teacher()
             {
                 FirstName = "Jeanne",
                 LastName = "Paris",
@@ -57,7 +57,7 @@ namespace ProjetProgAvENSC1A
                 Gender = Constants.Gender.Feminin
             };
             
-            Teacher t3 = (Teacher) new Person()
+            Teacher t3 = new Teacher()
             {
                 FirstName = "Arthur",
                 LastName = "Pratt",
@@ -65,7 +65,7 @@ namespace ProjetProgAvENSC1A
                 Gender = Constants.Gender.Autre
             };
 
-            Student s1 = (Student) new Person()
+            Student s1 = new Student()
             {
                 FirstName = "Perceval",
                 LastName = "Caillet",
@@ -73,7 +73,7 @@ namespace ProjetProgAvENSC1A
                 Gender = Constants.Gender.Masculin
             };
 
-            Student s2 = (Student) new Person()
+            Student s2 = new Student()
             {
                 FirstName = "Iris",
                 LastName = "Fouqueault",
@@ -81,7 +81,7 @@ namespace ProjetProgAvENSC1A
                 Gender = Constants.Gender.Feminin
             };
 
-            Student s3 = (Student) new Person()
+            Student s3 = new Student()
             {
                 FirstName = "Emmeline",
                 LastName = "Tournot",
@@ -89,7 +89,7 @@ namespace ProjetProgAvENSC1A
                 Gender = Constants.Gender.Feminin
             };
 
-            Extern e1 = (Extern) new Person()
+            Extern e1 = new Extern()
             {
                 FirstName = "Jacques",
                 LastName = "Sabatier",

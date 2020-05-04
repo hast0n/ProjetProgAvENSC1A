@@ -91,7 +91,7 @@ namespace CliLayoutRenderTools
                     {
                         resource[1] = resource[1].Replace(g[0].Value, PageModifiers[g[1].Value]);
                     }
-                    catch (KeyNotFoundException e)
+                    catch (KeyNotFoundException)
                     {
                         throw new AttributeValueNotFoundException(
                             $"Value not specified for attribute \'{g[1].Value}\'.");

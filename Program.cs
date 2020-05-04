@@ -9,7 +9,7 @@ namespace ProjetProgAvENSC1A
         public static void Main()
         {
             var app = new App();
-            app.Debug();
+            //app.Debug();
             //app.Launch();
         }
     }

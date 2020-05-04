@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 using ProjetProgAvENSC1A.Models;
 
-namespace ProjetProgAvENSC1A.Services
+namespace ProjetProgAvENSC1A.Services.DataTables
 {
     class UserDataTable : IDataTable
     {
         public List<EntryType> Entries { get; private set; }
 
         public bool AddEntry(EntryType entry)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool UpdateEntry(EntryType oldEntry, EntryType newEntry)
         {
             throw new NotImplementedException();
         }
@@ -24,12 +29,17 @@ namespace ProjetProgAvENSC1A.Services
             throw new NotImplementedException();
         }
 
-        public bool LoadFromStorage()
+        public Task<bool> LoadFromStorage()
         {
             throw new NotImplementedException();
         }
 
-        public bool WriteToStorage()
+        public async Task<bool> WriteToStorage()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool DropContent()
         {
             throw new NotImplementedException();
         }

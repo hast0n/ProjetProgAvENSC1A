@@ -1,26 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
 using ProjetProgAvENSC1A.Models;
 
-namespace ProjetProgAvENSC1A.Services.DataTable
+namespace ProjetProgAvENSC1A.Services.DataTables
 {
     class CourseDataTable : IDataTable
     {
-        private string filePath = @"data\courses.json";
-        public List<EntryType> Entries { get; }
+        private const string filePath = Constants.COURSE_FILEPATH;
 
+        private readonly List<EntryType> _entries;
+        public List<EntryType> Entries => _entries.ToList(); // returns a copy of the entry list
+        
         public CourseDataTable()
         {
-            Entries = new List<EntryType>();
+            _entries = new List<EntryType>();
         }
 
         public bool AddEntry(EntryType entry)
         {
             try
             {
-                Entries.Add(entry);
+                _entries.Add(entry);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -33,24 +39,84 @@ namespace ProjetProgAvENSC1A.Services.DataTable
             throw new NotImplementedException();
         }
 
-        public bool UpdateEntry(EntryType entry)
+        public bool RemoveEntry(string uuid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _entries.RemoveAll(entry => entry.UUID.Equals(uuid));
+            }
+            catch (Exception) { return false; }
+
+            return true;
         }
 
-        public bool RemoveEntry(string id)
+        public async Task<bool> LoadFromStorage()
         {
-            throw new NotImplementedException();
+            var tempEntries = new List<Course>();
+
+            try
+            {
+                await using FileStream fs = File.Open(filePath, FileMode.OpenOrCreate);
+                var fileDump = JsonSerializer.DeserializeAsync<List<Course>>(fs);
+
+                tempEntries = fileDump.Result;
+            }
+            catch (JsonException)
+            {
+                tempEntries = new List<Course>();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            finally
+            {
+                tempEntries.ForEach(entry =>
+                {
+                    entry.Teachers = entry.JsonTeachUUID.ConvertAll(
+                        uuid => (Teacher)App.DB[DBTable.Person][uuid]);
+                });
+
+                Entries.AddRange(tempEntries);
+            }
+
+            return true;
         }
 
-        public bool LoadFromStorage()
+        public async Task<bool> WriteToStorage()
         {
-            throw new NotImplementedException();
+            var tempEntries = Entries.ConvertAll(entry => (Course)entry);
+
+            try
+            {
+                tempEntries.ForEach(entry =>
+                {
+                    Course c = (Course)entry;
+
+                    c.JsonTeachUUID = c.Teachers.ConvertAll(teacher => teacher.UUID);
+                });
+
+                await using FileStream fs = File.Open(filePath, FileMode.Truncate);
+
+                var options = new JsonSerializerOptions { WriteIndented = true };
+
+                await JsonSerializer.SerializeAsync(fs, tempEntries, options);
+            }
+            catch (Exception) { return false; }
+
+            return true;
         }
 
-        public bool WriteToStorage()
+        public bool DropContent()
         {
-            throw new NotImplementedException();
+            try
+            {
+                _entries.Clear();
+                WriteToStorage();
+            }
+            catch (Exception) { return false; }
+
+            return true;
         }
     }
 }

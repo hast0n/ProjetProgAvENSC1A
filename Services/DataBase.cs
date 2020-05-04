@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using ProjetProgAvENSC1A.Models;
-using ProjetProgAvENSC1A.Services.DataTable;
 using ProjetProgAvENSC1A.Services.DataTables;
 
 namespace ProjetProgAvENSC1A.Services
@@ -34,20 +33,27 @@ namespace ProjetProgAvENSC1A.Services
                 {DBTable.FormYear, new FormYearDataTable()},
                 {DBTable.Person, new PersonDataTable()},
                 {DBTable.Promotion, new PromotionDataTable()},
-                {DBTable.User, new UserDataTable()},
+                //{DBTable.User, new UserDataTable()},
             };
         }
 
         public bool Load()
         {
-            Directory.CreateDirectory("data");
-            return _data.All(keyValuePair => keyValuePair.Value.LoadFromStorage());
+            Directory.CreateDirectory("data"); // check if folder exists : if not, recreate it
+            return new IDataTable[]
+            {   // order matters
+                _data[DBTable.Person],
+                _data[DBTable.Courses],
+                _data[DBTable.FormYear],
+                _data[DBTable.Promotion],
+                _data[DBTable.Project],
+            }.All(dt => dt.LoadFromStorage().Result);
         }
 
         public bool Persist()
         {
-            Directory.CreateDirectory("data");
-            return _data.All(keyValuePair => keyValuePair.Value.WriteToStorage());
+            Directory.CreateDirectory("data"); // check if folder still exists : if not, recreate it
+            return _data.All(keyValuePair => keyValuePair.Value.WriteToStorage().Result); // order doesn't matter
         } 
     }
 }
