@@ -5,9 +5,20 @@ using ProjetProgAvENSC1A.Services;
 
 namespace ProjetProgAvENSC1A.Models
 {
+    public enum TypeDeliverable
+    {
+        SiteWeb,
+        Rapport,
+        MaquetteFonctionnelle,
+        Documentation,
+        CahierDesCharges,
+        ApplicationLogicielle,
+        Autre
+    }
+
     class Deliverable : EntryType
     {
-        public Constants.TypeDeliverable Type { get; private set; }
-        public string Information { get; private set; }
+        public TypeDeliverable Type { get; set; }
+        public string Information { get; set; }
     }
 }

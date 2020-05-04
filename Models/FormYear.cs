@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ProjetProgAvENSC1A.Services.DataTable
+namespace ProjetProgAvENSC1A.Models
 {
-    class PromotionDatatable
+    class FormYear : EntryType
     {
+        //
     }
 }

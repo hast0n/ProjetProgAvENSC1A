@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ProjetProgAvENSC1A.Models;
 
 // TODO: Add JSON serializable fields to each class extending IDatabase
 
@@ -8,20 +9,20 @@ namespace ProjetProgAvENSC1A.Services
 {
     interface IDataTable
     {
-        public List<object> Entries { get; }
+        public List<EntryType> Entries { get; }
 
         public object this [int index] => Entries[index];
+        public object this [string uuid] => Entries.Find(e => e.UUID.Equals(uuid));
 
 
-        public bool AddEntry(object entry);
+        public bool AddEntry(EntryType entry);
 
-        public bool UpdateEntry(object entry);
+        public bool UpdateEntry(EntryType oldEntry, EntryType newEntry);
 
-        public bool RemoveEntry(string id);
+        public bool RemoveEntry(string uuid);
 
-        public List<object> LoadFromStorage();
+        public bool LoadFromStorage();
 
         public bool WriteToStorage();
-
     }
 }

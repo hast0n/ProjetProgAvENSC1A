@@ -7,15 +7,38 @@ namespace ProjetProgAvENSC1A.Models
 {
     class Project : EntryType
     {
-        public string Topic { get; private set; }
-        public List<Course> Courses { get; private set; }
-        public List<Person> Contributors { get; private set; }
-        public DateTime StartDate { get; private set; }
-        public DateTime EndDate { get; private set; }
-        public Deliverable[] Deliverables { get; private set; }
-        public List<Promotion> Promotions { get; private set; }
+        public string Topic { get; set; }
 
-        //public DateTime Duration => EndDate - StartDate;
+        public DateTime StartDate { get; set; }
         
+        public DateTime EndDate { get; set; }
+
+        // Les livrables sont dépendants du projet à l'inverse des 
+        // autres attributs donc peuvent être stockés uniquement
+        // dans l'objet projet
+        public List<Deliverable> Deliverables { get; set; }
+
+
+        [JsonIgnore]
+        public TimeSpan Duration => EndDate - StartDate;
+
+        [JsonIgnore]
+        public List<Promotion> Promotions { get; set; }
+
+        [JsonIgnore]
+        public List<Course> Courses { get; set; }
+
+        [JsonIgnore]
+        public List<Person> Contributors { get; set; }
+
+
+        [JsonPropertyName("Promotions")] 
+        public List<string> JsonPromUUID { get; set; }
+        
+        [JsonPropertyName("Courses")] 
+        public List<string> JsonCoursUUID { get; set; }
+        
+        [JsonPropertyName("Contributors")] 
+        public List<string> JsonPersUUID { get; set; }
     }
 }

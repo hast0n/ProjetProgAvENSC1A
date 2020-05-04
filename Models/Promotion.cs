@@ -6,5 +6,6 @@ namespace ProjetProgAvENSC1A.Models
 {
     class Promotion : EntryType
     {
+        //
     }
 }
