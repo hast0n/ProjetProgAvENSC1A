@@ -27,5 +27,30 @@ namespace ProjetProgAvENSC1A.Services
         
         public const string SELECTOR_BACKWARD = "z";
         public const string SELECTOR_FORWARD = "s";
+
+        public enum TypeDeliverable
+        {
+            SiteWeb,
+            Rapport,
+            MaquetteFonctionnelle,
+            Documentation,
+            CahierDesCharges,
+            ApplicationLogicielle,
+            Autre
+        }
+
+        public enum Gender
+        {
+            Féminin,
+            Masculin, 
+            Autre
+        }
+
+        public enum GradeYear
+        {
+            Y1,
+            Y2,
+            Y3
+        }
     }
 }

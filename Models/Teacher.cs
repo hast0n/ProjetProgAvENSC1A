@@ -4,9 +4,11 @@ using System.Text;
 
 namespace ProjetProgAvENSC1A.Models
 {
-    class Course : EntryType
+    class Teacher : Person
     {
-        public string Name { get; set; }
-        public List<Teacher> Teachers { get; set; }
+        public void CoursesTaught()
+        {
+            //work on the database
+        }
     }
 }

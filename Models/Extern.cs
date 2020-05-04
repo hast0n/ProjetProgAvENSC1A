@@ -4,9 +4,7 @@ using System.Text;
 
 namespace ProjetProgAvENSC1A.Models
 {
-    class Course : EntryType
+    class Extern
     {
-        public string Name { get; set; }
-        public List<Teacher> Teachers { get; set; }
     }
 }
