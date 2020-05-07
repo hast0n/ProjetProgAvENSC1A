@@ -4,6 +4,8 @@ using ProjetProgAvENSC1A.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ProjetProgAvENSC1A.Controllers;
+using ProjetProgAvENSC1A.Views;
 
 namespace ProjetProgAvENSC1A
 {
@@ -12,9 +14,20 @@ namespace ProjetProgAvENSC1A
         public static DataBase DB = new DataBase();
         public static Renderer Renderer = new Renderer() { FrameWidth = 70 };
 
+        public readonly User UnauthorizedUser = new User()
+        {
+            Privilege = Privilege.Unauthorized,
+        };
+
+        private User _user;
+        public string Username => _user.Name;
+        public Privilege UserPrivilege => _user.Privilege;
+
         public App()
         {
             DB.Load();
+
+            _user = UnauthorizedUser;
 
             Renderer.SetDefaultResources();
             Renderer.AddVisualResources(new Dictionary<string, string>()
@@ -28,15 +41,9 @@ namespace ProjetProgAvENSC1A
                     "$userStatus"
                 }
             });
-
-            //User user = LoginController.Authenticate();
-
-            //SelectorTestView selectorTestView = new SelectorTestView(console.VisualResources, console.SplitChar);
-
-            //console.Render(selectorTestView);
         }
 
-        public void Debug()
+        public void Debug(bool writeToStorage)
         {
             #region define persons (7)
             Teacher t1 = new Teacher()
@@ -174,6 +181,22 @@ namespace ProjetProgAvENSC1A
             };
             #endregion
 
+            #region define users (1)
+            User u1 = new User()
+            {
+                Name = "admin",
+                Privilege = Privilege.Administrator,
+                PasswordHash = SHA.GenerateSHA512String("Bonjour")
+            };
+            
+            User u2 = new User()
+            {
+                Name = "toto",
+                Privilege = Privilege.Spectator,
+                PasswordHash = SHA.GenerateSHA512String("salut")
+            };
+            #endregion
+
             foreach (var pers in new List<Person>() {t1, t2, t3, s1, s2, s3, e1})
                 DB[DBTable.Person].AddEntry(pers);
             
@@ -186,19 +209,39 @@ namespace ProjetProgAvENSC1A
             DB[DBTable.Promotion].AddEntry(p1);
             
             DB[DBTable.Project].AddEntry(proj1);
-
+            
+            DB[DBTable.User].AddEntry(u1);
+            DB[DBTable.User].AddEntry(u2);
+            
             // write on storage
-            DB.Persist();
+            if (writeToStorage) DB.Persist();
         }
 
         public void Launch()
         {
-            throw new NotImplementedException();
+            _user = LoginController.Authenticate();
+
+            while (!_user.Privilege.Equals(Privilege.Unauthorized))
+            {
+                _user = LoginController.Authenticate();
+            }
+
+            while (Route())
+            {
+                //
+            }
         }
 
-        public void Route()
+        public bool Route()
         {
+            //HomeView homeView = new HomeView();
 
+
+            //SelectorTestView selectorTestView = new SelectorTestView(console.VisualResources, console.SplitChar);
+
+            //console.Render(selectorTestView);
+
+            return true;
         }
     }
 }

@@ -33,7 +33,7 @@ namespace ProjetProgAvENSC1A.Services
                 {DBTable.FormYear, new FormYearDataTable()},
                 {DBTable.Person, new PersonDataTable()},
                 {DBTable.Promotion, new PromotionDataTable()},
-                //{DBTable.User, new UserDataTable()},
+                {DBTable.User, new UserDataTable()},
             };
         }
 
@@ -42,11 +42,12 @@ namespace ProjetProgAvENSC1A.Services
             Directory.CreateDirectory("data"); // check if folder exists : if not, recreate it
             return new IDataTable[]
             {   // order matters
+                _data[DBTable.User],
                 _data[DBTable.Person],
                 _data[DBTable.Courses],
                 _data[DBTable.FormYear],
                 _data[DBTable.Promotion],
-                _data[DBTable.Project],
+                _data[DBTable.Project]
             }.All(dt => dt.LoadFromStorage().Result);
         }
 

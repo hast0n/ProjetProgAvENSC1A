@@ -33,6 +33,7 @@ namespace ProjetProgAvENSC1A.Services
         public const string COURSE_FILEPATH = @"data\courses.json";
         public const string FORMYEAR_FILEPATH = @"data\formyears.json";
         public const string PROMOTION_FILEPATH = @"data\promotions.json";
+        public const string USER_FILEPATH = @"data\users.json";
         
 
         public enum TypeDeliverable

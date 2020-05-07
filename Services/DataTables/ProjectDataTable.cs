@@ -107,13 +107,13 @@ namespace ProjetProgAvENSC1A.Services.DataTables
                     entry.JsonPromUUID = entry.Promotions.ConvertAll(prom => prom.UUID);
                 });
 
-                await using FileStream fs = File.Open(filePath, FileMode.Truncate);
+                await using FileStream fs = File.Open(filePath, FileMode.Truncate, FileAccess.Write);
 
                 var options = new JsonSerializerOptions { WriteIndented = true };
 
                 await JsonSerializer.SerializeAsync(fs, tempEntries, options);
             }
-            catch (NotImplementedException) {  }
+            catch (Exception) { return false; }
             
             return true;
         }

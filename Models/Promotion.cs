@@ -31,5 +31,3 @@ namespace ProjetProgAvENSC1A.Models
         }).ToList();
     }
 }
-
-
