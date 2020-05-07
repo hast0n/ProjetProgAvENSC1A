@@ -54,8 +54,11 @@ namespace ProjetProgAvENSC1A.Services.DataTables
 
             try
             {
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                options.Converters.Add(new PersonConverter());
+
                 await using FileStream fs = File.Open(filePath, FileMode.OpenOrCreate);
-                var fileDump = JsonSerializer.DeserializeAsync<List<Person>>(fs);
+                var fileDump = JsonSerializer.DeserializeAsync<List<Person>>(fs, options);
 
                 tempEntries = fileDump.Result;
             }

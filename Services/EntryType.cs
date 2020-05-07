@@ -6,11 +6,12 @@ namespace ProjetProgAvENSC1A.Models
 {
     public class EntryType
     {
-        public string UUID { get; private set; }
+        private Guid _uuid = Guid.NewGuid();
 
-        public EntryType(string uuid = null)
+        public string UUID
         {
-            this.UUID = uuid ?? Guid.NewGuid().ToString();
+            get => _uuid.ToString();
+            set => _uuid = Guid.Parse(value);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,6 +15,12 @@ namespace ProjetProgAvENSC1A.Models
         public string LastName { get; set; }
         public int Age { get; set; }
         public Constants.Gender Gender { get; set; }
+
+        public List<EntryType> Projects => App.DB[DBTable.Project].Entries.Where(entry =>
+        {
+            Project p = (Project)entry;
+            return p.Contributors.ContainsValue((Student)this);
+        }).ToList();
 
         public void InvolvedInProject() 
         { 
@@ -102,6 +109,10 @@ namespace ProjetProgAvENSC1A.Models
                             int gender = reader.GetInt32();
                             person.Gender = (Constants.Gender)gender;
                             break;
+                        case "UUID":
+                            string uuid = reader.GetString();
+                            person.UUID = uuid;
+                            break;
                     }
                 }
             }
@@ -132,6 +143,7 @@ namespace ProjetProgAvENSC1A.Models
             writer.WriteString("LastName", person.LastName);
             writer.WriteNumber("Age", person.Age);
             writer.WriteNumber("Gender",(int)person.Gender);
+            writer.WriteString("UUID",person.UUID);
 
             writer.WriteEndObject();
         }

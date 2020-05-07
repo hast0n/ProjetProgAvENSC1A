@@ -1,24 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using CliLayoutRenderTools;
-using ProjetProgAvENSC1A.Controllers;
+﻿using CliLayoutRenderTools;
 using ProjetProgAvENSC1A.Models;
 using ProjetProgAvENSC1A.Services;
-using ProjetProgAvENSC1A.Views;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ProjetProgAvENSC1A
 {
     class App
     {
         public static DataBase DB = new DataBase();
-        public static Renderer console = new Renderer() { FrameWidth = 70 };
+        public static Renderer Renderer = new Renderer() { FrameWidth = 70 };
 
         public App()
         {
             DB.Load();
 
-            console.SetDefaultResources();
-            console.AddVisualResources(new Dictionary<string, string>()
+            Renderer.SetDefaultResources();
+            Renderer.AddVisualResources(new Dictionary<string, string>()
             {
                 {
                     "appName",
@@ -39,7 +38,6 @@ namespace ProjetProgAvENSC1A
 
         public void Debug()
         {
-
             #region define persons (7)
             Teacher t1 = new Teacher()
             {
@@ -48,7 +46,7 @@ namespace ProjetProgAvENSC1A
                 Age = 35,
                 Gender = Constants.Gender.Masculin
             };
-            
+
             Teacher t2 = new Teacher()
             {
                 FirstName = "Jeanne",
@@ -70,7 +68,8 @@ namespace ProjetProgAvENSC1A
                 FirstName = "Perceval",
                 LastName = "Caillet",
                 Age = 19,
-                Gender = Constants.Gender.Masculin
+                Gender = Constants.Gender.Masculin,
+                Student_ID = "pcaillet"
             };
 
             Student s2 = new Student()
@@ -78,7 +77,8 @@ namespace ProjetProgAvENSC1A
                 FirstName = "Iris",
                 LastName = "Fouqueault",
                 Age = 21,
-                Gender = Constants.Gender.Feminin
+                Gender = Constants.Gender.Feminin,
+                Student_ID = "ifouqueault"
             };
 
             Student s3 = new Student()
@@ -86,7 +86,8 @@ namespace ProjetProgAvENSC1A
                 FirstName = "Emmeline",
                 LastName = "Tournot",
                 Age = 20,
-                Gender = Constants.Gender.Feminin
+                Gender = Constants.Gender.Feminin,
+                Student_ID = "etournot"
             };
 
             Extern e1 = new Extern()
@@ -155,7 +156,21 @@ namespace ProjetProgAvENSC1A
                 },
                 Courses = new List<Course>() { c3 },
                 Promotions = new List<Promotion>() { p1 },
-                Contributors = new List<Person>() { s1, s2, e1 }
+                Contributors = new Dictionary<Role, Person>()
+                {
+                    {
+                        Role.ChefDeProj,
+                        s1
+                    },
+                    {
+                        Role.Developp,
+                        s2
+                    },
+                    {
+                        Role.Secretaire,
+                        s3
+                    },
+                }
             };
             #endregion
 
@@ -179,6 +194,11 @@ namespace ProjetProgAvENSC1A
         public void Launch()
         {
             throw new NotImplementedException();
+        }
+
+        public void Route()
+        {
+
         }
     }
 }

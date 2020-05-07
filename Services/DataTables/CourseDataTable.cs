@@ -77,7 +77,7 @@ namespace ProjetProgAvENSC1A.Services.DataTables
                         uuid => (Teacher)App.DB[DBTable.Person][uuid]);
                 });
 
-                Entries.AddRange(tempEntries);
+                _entries.AddRange(tempEntries);
             }
 
             return true;

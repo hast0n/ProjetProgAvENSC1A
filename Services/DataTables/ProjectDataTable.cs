@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -71,13 +72,15 @@ namespace ProjetProgAvENSC1A.Services.DataTables
                 tempEntries.ForEach(entry =>
                 {
                     entry.Courses = entry.JsonCoursUUID.ConvertAll(
-                        uuid => (Course) App.DB[DBTable.Courses][uuid]);
+                        uuid => (Course)App.DB[DBTable.Courses][uuid]);
 
                     entry.Promotions = entry.JsonPromUUID.ConvertAll(
-                        uuid => (Promotion) App.DB[DBTable.Promotion][uuid]);
+                        uuid => (Promotion)App.DB[DBTable.Promotion][uuid]);
 
-                    entry.Contributors = entry.JsonPersUUID.ConvertAll(
-                        uuid => (Person) App.DB[DBTable.Person][uuid]);
+                    entry.Contributors = entry.JsonPersUUID.ToDictionary(
+                        p => (Role)int.Parse(p.Key),
+                        p => (Person)App.DB[DBTable.Person][p.Value]
+                    );
                 });
 
                 _entries.AddRange(tempEntries);
@@ -95,7 +98,12 @@ namespace ProjetProgAvENSC1A.Services.DataTables
                 tempEntries.ForEach(entry =>
                 {
                     entry.JsonCoursUUID = entry.Courses.ConvertAll(course => course.UUID);
-                    entry.JsonPersUUID = entry.Contributors.ConvertAll(pers => pers.UUID);
+
+                    entry.JsonPersUUID = entry.Contributors.ToDictionary(
+                        p => $"{(int)p.Key}",
+                        p => p.Value.UUID
+                    );
+
                     entry.JsonPromUUID = entry.Promotions.ConvertAll(prom => prom.UUID);
                 });
 
@@ -105,7 +113,7 @@ namespace ProjetProgAvENSC1A.Services.DataTables
 
                 await JsonSerializer.SerializeAsync(fs, tempEntries, options);
             }
-            catch (Exception) { return false; }
+            catch (NotImplementedException) {  }
             
             return true;
         }

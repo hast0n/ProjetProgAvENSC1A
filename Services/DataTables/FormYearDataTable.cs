@@ -1,11 +1,10 @@
-﻿using System;
+﻿using ProjetProgAvENSC1A.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using ProjetProgAvENSC1A.Models;
 
 namespace ProjetProgAvENSC1A.Services.DataTables
 {

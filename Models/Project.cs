@@ -5,6 +5,18 @@ using System.Text.Json.Serialization;
 
 namespace ProjetProgAvENSC1A.Models
 {
+    public enum Role
+    {
+        ChefDeProj,
+        Tuteur,
+        Client,
+        Developp,
+        RespoFH,
+        RespoQuali,
+        Secretaire,
+        TimeKeeper
+    }
+
     class Project : EntryType
     {
         public string Topic { get; set; }
@@ -18,7 +30,6 @@ namespace ProjetProgAvENSC1A.Models
         // dans l'objet projet
         public List<Deliverable> Deliverables { get; set; }
 
-
         [JsonIgnore]
         public TimeSpan Duration => EndDate - StartDate;
         //Form : NbDays.NbHours:NbMinutes:NbSeconds Write Duration.Days for collect number of days
@@ -30,7 +41,7 @@ namespace ProjetProgAvENSC1A.Models
         public List<Course> Courses { get; set; }
 
         [JsonIgnore]
-        public List<Person> Contributors { get; set; }
+        public Dictionary<Role, Person> Contributors { get; set; }
 
 
         [JsonPropertyName("Promotions")] 
@@ -40,6 +51,6 @@ namespace ProjetProgAvENSC1A.Models
         public List<string> JsonCoursUUID { get; set; }
         
         [JsonPropertyName("Contributors")] 
-        public List<string> JsonPersUUID { get; set; }
+        public Dictionary<string, string> JsonPersUUID { get; set; }
     }
 }
