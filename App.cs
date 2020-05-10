@@ -141,7 +141,7 @@ namespace ProjetProgAvENSC1A
                 Name = "Bernoulli"
             };
             #endregion
-
+           
             #region define projects (1)
             Project proj1 = new Project()
             {
@@ -212,7 +212,7 @@ namespace ProjetProgAvENSC1A
             
             DB[DBTable.User].AddEntry(u1);
             DB[DBTable.User].AddEntry(u2);
-            
+
             // write on storage
             if (writeToStorage) DB.Persist();
         }
