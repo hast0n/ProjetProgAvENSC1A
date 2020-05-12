@@ -21,11 +21,6 @@ namespace ProjetProgAvENSC1A.Models
             Project p = (Project)entry;
             return p.Contributors.ContainsValue((Student)this);
         }).ToList();
-
-        public void InvolvedInProject() 
-        { 
-            //work on the database
-        }
     }
 
     // From: https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-converters-how-to#support-polymorphic-deserialization

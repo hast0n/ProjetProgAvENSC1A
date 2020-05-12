@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using ProjetProgAvENSC1A.Services;
+
 
 namespace ProjetProgAvENSC1A.Models
 {
@@ -15,5 +17,10 @@ namespace ProjetProgAvENSC1A.Models
 
         [JsonPropertyName("Courses")]
         public List<string> JsonCoursUUID { get; set; }
+
+    //    public List<Project> Projects => App.DB[DBTable.???].Entries.Where(entry =>
+    //    {
+            
+    //    }).ToList();
     }
 }
