@@ -2,91 +2,85 @@
 using System.Collections.Generic;
 using System.Text;
 using CliLayoutRenderTools;
+using ProjetProgAvENSC1A.Models;
 
 namespace ProjetProgAvENSC1A.Views
 {
-    /*
-     * Ici on crée notre première page en utilisant le renderer
-     *
-     * On commence par définir la class qui prendra la convention de nommage suivante : XxxPage
-     * et qui dérive nécessairement de ContentPage
-     */
-
-    class HomeView : ContentView
+    class HomePage : ContentView
     {
-
-        /*
-         * Définition du constructeur :
-         * Le nombre de paramètre que prend le constructeur est à définir en
-         * fonction des besoins :
-         *      - a t'on besoin de lui passer des ressources partégées
-         *      - a t'on besoin de lui passer des valeurs de variables
-         *      - etc..
-         *
-         * La définition du layout et des LocalResources doit se faire dans le
-         * constucteur ou au moins une fois que l'objet a été instancié vu que
-         * ContentPage nécessite une instance pour posséder ces attributs
-         */
-
-        public HomeView(
-            Dictionary<string, string> sharedResources,
-            Dictionary<string, string> pageModifiers)
-            :base(sharedResources)
+        public HomePage(Dictionary<string, string> userData)
         {
-            // Rendre les paramètres accessibles à l'instance de la class mère ContentPage
-            SharedResources = sharedResources;
-            PageModifiers = pageModifiers;
+            SharedResources = App.Renderer.VisualResources;
+            PageModifiers = userData;
 
-            
-            /*
-             * Ici on définit le layout de notre écran en question
-             * On peut faire une analogie avec le html --> ici on construit la structure
-             * de notre page (avec les balises)
-             * Du haut vers le bas, cela correspond à l'ordre d'affichage
-             */ 
+            bool isAllowed = userData["userPrivilege"] != Privilege.Spectator.ToString();
+
             Layout = new List<string>()
             {
-                "topBar", 
-                "[emptyLine]", 
-                "[intro]",
-                "3*[test]",
-                /*
-                 * Si on regarde "intro", il est défini plus bas dans les LocalResources donc il est spécifiques
-                 * à HomePage.
-                 *
-                 * Les autres ressources partégées doivent être passées en paramètre à la création de la page
-                 * (si on souhaite les utiliser).
-                 *
-                 * Des ressources locales et partagées peuvent avoir le même nom (c'est le cas avec "intro"), c'est alors
-                 * la ressource locale qui sera utilisée.
-                 */
-                "[emptyLine]", 
-                "botBar"
-            };
+                "2*emptyLine",
+                "appName",
+                "2*emptyLine",
+                "userStatus",
 
-            // Ici on définit les ressources locales, spécifiques à la page que l'on décrit (ici HomePage)
+                "topBar",
+                "3*[emptyLine]",
+                
+                "[intro]",
+                "2*[emptyLine]",
+
+                "[sortingMethodSelectors]",
+                "[emptyLine]",
+
+                isAllowed ? "[editMethodSelectors]" : "[emptyLine]",
+                "[emptyLine]",
+
+                "[quitOption]",
+
+                "3*[emptyLine]",
+                "botBar",
+                "selectorHint"
+
+             };
+
             LocalResources = new Dictionary<string, string>()
             {
                 {
-                    /* Nom de la ressource : */ "intro",
-                    /* Valeur de la ressource : */ "Bienvenue à toi, $userName ! C'est cool walah <color value=blue>$qqch<color value=black>"
-                    
-                    /* 2 variables sont définies dans la chaine ci dessus : $userName et $qqch
-                     * les valeurs par lesquelles les remplacer sont fournie par le paramètre pageModifiers
-                     *
-                     * Si les valeurs de paramètres ne sont pas fournies alors une erreur
-                     * AttributeValueNotFoundException sera renvoyée.
-                     * */
+                    "intro",
+                    "Welcome to Project Manager, select one of the following options below:"
                 },
                 {
-                    "test",
-                    "--> | <input regex=[A-Za-z0-9]> | <--"
+                    "sortingMethodSelectors",
+                    String.Join(App.Renderer.SplitChar, "",
+                        "Sort & display projects",
+                        "┌──────────────────────────┐",
+                        "│ <selector value=0 text=' - Sort by Students '>     │",
+                        "│ <selector value=1 text=' - Sort by Teachers '>     │",
+                        "│ <selector value=2 text=' - Sort by Externs '>      │",
+                        "│ <selector value=3 text=' - Sort by Courses '>      │",
+                        "│ <selector value=4 text=' - Sort by School Years '> │",
+                        "│ <selector value=5 text=' - Sort by Promotions '>   │",
+                        "└──────────────────────────┘",
+                        "┌──────────────────────────┐",
+                        "│ <selector value=6 text=' - Sort by Date ASC ' color=blue>     │",
+                        "│ <selector value=7 text=' - Sort by Date DESC ' color=blue>    │",
+                        "│ <selector value=8 text=' - Sort by Keywords ' color=blue>     │",
+                        "└──────────────────────────┘")
                 },
+                {
+                    "editMethodSelectors",
+                    String.Join(App.Renderer.SplitChar, "", 
+                        "Add & remove projects",
+                        "┌──────────────────────────┐",
+                        "│ <selector value=9 text=' - Add project ' color=yellow>          │",
+                        "│ <selector value=10 text=' - Remove project ' color=yellow>       │",
+                        "└──────────────────────────┘")
+                },
+                {
+                    "quitOption",
+                    String.Join(App.Renderer.SplitChar, "",
+                        "<selector value=11 text=' -- Exit -- ' color=red>")
+                }
             };
-
-            // Une fois que le layout est défini avec ou sans pageModifiers (ça dépend de si on veut afficher 
-            // de manière dynamique ou non), on a juste à créer une instance de cette page
-            // --> fait dans testScript.cs
         }
     }
 }
