@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ProjetProgAvENSC1A.Services;
 
 namespace ProjetProgAvENSC1A.Models
 {
@@ -14,8 +15,18 @@ namespace ProjetProgAvENSC1A.Models
 
     class User : EntryType
     {
-        public Privilege Privilege { get; set; }
-        public string Name { get; set; }
-        public string PasswordHash { get; set; }
+        public Privilege Privilege { get; protected set; }
+        public string Name { get; protected set; }
+        public string PasswordHash { get; protected set; }
+    }
+
+    class TestUser : User
+    {
+        public TestUser()
+        {
+            Privilege = Privilege.Administrator;
+            Name = "Administrateur";
+            PasswordHash = SHA.GenerateSHA512String("admin");
+        }
     }
 }

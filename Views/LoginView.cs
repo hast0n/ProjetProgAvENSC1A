@@ -20,7 +20,7 @@ namespace ProjetProgAvENSC1A.Views
                 "2*emptyLine",
                 
                 "topBar",
-                "2*[emptyLine]",
+                "5*[emptyLine]",
                 
                 "[loginHint]",
                 "2*[emptyLine]",
@@ -31,7 +31,7 @@ namespace ProjetProgAvENSC1A.Views
                 "2*[emptyLine]",
                 "[hitEnterHint]",
 
-                "2*[emptyLine]",
+                "5*[emptyLine]",
                 "botBar"
             };
 

@@ -12,22 +12,15 @@ namespace ProjetProgAvENSC1A
     class App
     {
         public static DataBase DB = new DataBase();
-        public static Renderer Renderer = new Renderer() { FrameWidth = 70 };
-
-        public readonly User UnauthorizedUser = new User()
-        {
-            Privilege = Privilege.Unauthorized,
-        };
-
-        private User _user;
-        public string Username => _user.Name;
-        public Privilege UserPrivilege => _user.Privilege;
+        public static Renderer Renderer = new Renderer() { FrameWidth = 110 };
+        
+        private static User _user = new User();
+        public static string Username => _user.Name;
+        public static Privilege UserPrivilege => _user.Privilege;
 
         public App()
         {
             DB.Load();
-
-            _user = UnauthorizedUser;
 
             Renderer.SetDefaultResources();
             Renderer.AddVisualResources(new Dictionary<string, string>()
@@ -38,7 +31,8 @@ namespace ProjetProgAvENSC1A
                 },
                 {
                     "userStatus",
-                    "$userStatus"
+                    "Logged in as $userName | Level of accreditation: " +
+                    "<color value=green> $userPrivilege <color value=black>"
                 }
             });
         }
@@ -182,19 +176,19 @@ namespace ProjetProgAvENSC1A
             #endregion
 
             #region define users (1)
-            User u1 = new User()
-            {
-                Name = "admin",
-                Privilege = Privilege.Administrator,
-                PasswordHash = SHA.GenerateSHA512String("Bonjour")
-            };
+            //User u1 = new User()
+            //{
+            //    Name = "admin",
+            //    Privilege = Privilege.Administrator,
+            //    PasswordHash = SHA.GenerateSHA512String("Bonjour")
+            //};
             
-            User u2 = new User()
-            {
-                Name = "toto",
-                Privilege = Privilege.Spectator,
-                PasswordHash = SHA.GenerateSHA512String("salut")
-            };
+            //User u2 = new User()
+            //{
+            //    Name = "toto",
+            //    Privilege = Privilege.Spectator,
+            //    PasswordHash = SHA.GenerateSHA512String("salut")
+            //};
             #endregion
 
             foreach (var pers in new List<Person>() {t1, t2, t3, s1, s2, s3, e1})
@@ -210,8 +204,8 @@ namespace ProjetProgAvENSC1A
             
             DB[DBTable.Project].AddEntry(proj1);
             
-            DB[DBTable.User].AddEntry(u1);
-            DB[DBTable.User].AddEntry(u2);
+            //DB[DBTable.User].AddEntry(u1);
+            //DB[DBTable.User].AddEntry(u2);
             
             // write on storage
             if (writeToStorage) DB.Persist();
@@ -219,27 +213,32 @@ namespace ProjetProgAvENSC1A
 
         public void Launch()
         {
-            _user = LoginController.Authenticate();
+            int attempts = 0;
 
-            while (!_user.Privilege.Equals(Privilege.Unauthorized))
+            do
             {
-                _user = LoginController.Authenticate();
-            }
+                attempts++;
+                _user = LoginController.Authenticate(attempts);
+            } while (_user.Privilege is Privilege.Unauthorized);
 
-            while (Route())
+            var userData = new Dictionary<string, string>()
+            {
+                {"userName", Username},
+                {"userPrivilege", UserPrivilege.ToString()}
+            };
+
+            while (Route(userData))
             {
                 //
             }
         }
 
-        public bool Route()
+        public bool Route(Dictionary<string, string> userData)
         {
-            //HomeView homeView = new HomeView();
 
+            HomePage homepage = new HomePage(userData);
+            var input = Renderer.Render(homepage);
 
-            //SelectorTestView selectorTestView = new SelectorTestView(console.VisualResources, console.SplitChar);
-
-            //console.Render(selectorTestView);
 
             return true;
         }

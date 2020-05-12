@@ -9,11 +9,11 @@ namespace ProjetProgAvENSC1A.Controllers
 {
     class LoginController
     {
-        public static User Authenticate()
+        public static User Authenticate(int attempts)
         {
             // Launch LoginView
-            var LoginView = new LoginView(App.Renderer.VisualResources, App.Renderer.SplitChar);
-            var result = App.Renderer.Render(LoginView);
+            //var LoginView = new LoginView(App.Renderer.VisualResources, App.Renderer.SplitChar);
+            //var result = App.Renderer.Render(LoginView);
 
             // extract input name
             // extract input password
@@ -23,7 +23,7 @@ namespace ProjetProgAvENSC1A.Controllers
             // if ok : return user
             // if nok : return UnauthorizedUser
 
-            return new User();
+            return new TestUser();
         }
     }
 }
