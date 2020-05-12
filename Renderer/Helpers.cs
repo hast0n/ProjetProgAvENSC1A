@@ -67,17 +67,19 @@ namespace CliLayoutRenderTools
 
         public static int GetPreviousSelectorIndex(this Dictionary<int, Dictionary<string, string>> dict, int index)
         {
-            return dict.TakeWhile(kvp => 
-                kvp.Value[Constants.TYPE].Equals(Constants.SELECTOR) 
-                && kvp.Key < index)
+            return dict.Where(kvp => 
+                    kvp.Value[Constants.TYPE].Equals(Constants.SELECTOR))
+                .TakeWhile(kvp =>
+                    kvp.Key < index)
                 .LastOrDefault().Key;
         }
 
         public static int GetNextSelectorIndex(this Dictionary<int, Dictionary<string, string>> dict, int index)
         {
-            return dict.SkipWhile(kvp =>
-                    kvp.Value[Constants.TYPE].Equals(Constants.SELECTOR)
-                    && kvp.Key <= index)
+            return dict.Where(kvp =>
+                    kvp.Value[Constants.TYPE].Equals(Constants.SELECTOR))
+                .SkipWhile(kvp =>
+                    kvp.Key <= index)
                 .FirstOrDefault().Key;
         }
 

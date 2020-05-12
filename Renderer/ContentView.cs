@@ -61,7 +61,9 @@ namespace CliLayoutRenderTools
         private string[] GetResourceOrDefault(string resourceIdentifier)
         {
             string key = Renderer.GetResourceName(resourceIdentifier, out GroupCollection groups);
-            string errorMessage = $"<--! Missing Resource for Identifier \'{resourceIdentifier}\' !-->";
+            string errorMessage = $"<color value=red>" +
+                                  $"<--! Missing Resource for Identifier \'{resourceIdentifier}\' !-->" +
+                                  $"<color value=black>";
 
             // will return value in LocalResources if exists in both
             return new string[]

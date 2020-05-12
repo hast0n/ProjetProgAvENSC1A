@@ -9,13 +9,6 @@ using ProjetProgAvENSC1A.Services;
 using static System.String;
 
 
- //TODO: Change input regex and accept attributes
- //TODO:       --> placeholder
- //TODO:       --> length (max char input number)
-
- //TODO: Find a way to increase refresh performance 
- //TODO:       --> use backspace (mostly not possible)
-
  //TODO: Colors on input sections
 
  //TODO: Restrict regex char acceptance
@@ -223,8 +216,17 @@ namespace CliLayoutRenderTools
                 },
                 {
                     "selectorHint",
-                    $"Highlight with {Constants.SELECTOR_BACKWARD.ToUpper()} and " +
-                    $"{Constants.SELECTOR_FORWARD.ToUpper()} & press <Enter> to confirm..."
+                    "<color value=white>" +
+                    $" Highlight with {Constants.SELECTOR_BACKWARD.ToUpper()} and " +
+                    $"{Constants.SELECTOR_FORWARD.ToUpper()} & press <Enter> to confirm... " +
+                    "<color value=black>"
+                },
+                {
+                    "inputFieldHint", 
+                    ""
+                },
+                {
+                    "pressAnyHint", "Press any key to continue..."
                 }
             };
         }
@@ -449,7 +451,7 @@ namespace CliLayoutRenderTools
             return Format("{2}{1}{0}{1}{3}{2}",
                 trimmedLine, paddingString, addSideChar ? symb : '\0', (colParity) ? " " : "");
         }
-        
+
 
 
         private ImmutableDictionary<int, Dictionary<string, string>> LaunchAndWaitForInput(ContentView view)
@@ -460,7 +462,6 @@ namespace CliLayoutRenderTools
                 {{ 0, new Dictionary<string, string>() {{ Constants.TYPE, null }} }}
                 .ToImmutableDictionary();
             
-            // Iterate over modifiers and set them
             if (modifierDictionary.ContainsField(Constants.INPUT))
             {
                 int inputIndex = modifierDictionary.GetInputFieldIndex();
@@ -482,6 +483,11 @@ namespace CliLayoutRenderTools
                     kvp.Value[Constants.TYPE].Equals(Constants.SELECTOR));
 
                 res = kvpEnumerable.ToImmutableDictionary();
+            }
+            else
+            {
+                RenderScreen(pageString, modifierDictionary);
+                var _ = Input;
             }
 
             ResetConsoleColors();
