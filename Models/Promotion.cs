@@ -32,7 +32,7 @@ namespace ProjetProgAvENSC1A.Models
             return p.Promotions.Contains(this);
         }).ToList();
 
-        public bool CurrentPromotion
+        public bool isCurrentPromotion
         {
             get
             {

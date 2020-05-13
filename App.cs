@@ -37,7 +37,7 @@ namespace ProjetProgAvENSC1A
             });
         }
 
-        public void Debug(bool writeToStorage)
+        public void GenerateSampleData(bool writeToStorage)
         {
             #region define persons (7)
             Teacher t1 = new Teacher()
@@ -209,6 +209,11 @@ namespace ProjetProgAvENSC1A
             
             // write on storage
             if (writeToStorage) DB.Persist();
+        }
+
+        public void Debug()
+        {
+
         }
 
         public void Launch()

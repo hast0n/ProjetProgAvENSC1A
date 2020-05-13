@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -144,6 +145,21 @@ namespace CliLayoutRenderTools
         public static bool ContainsField(this Dictionary<int, Dictionary<string, string>> dict, string fieldType)
         {
             return dict.Any(kvp => kvp.Value[Constants.TYPE].Equals(fieldType));
+        }
+
+
+        public static string GetSelectedValue(ImmutableDictionary<string, Dictionary<string, string>> input)
+        {
+            try
+            {
+                return input.FirstOrDefault(kvp =>
+                    kvp.Value[Constants.SELECTED] == bool.TrueString)
+                    .Value[Constants.VALUE];
+            }
+            catch (NullReferenceException)
+            {
+                return null;
+            }
         }
     }
 }
