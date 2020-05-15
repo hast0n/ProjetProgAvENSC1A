@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ProjetProgAvENSC1A.Controllers;
+using ProjetProgAvENSC1A.Services.DataTables;
 using ProjetProgAvENSC1A.Views;
 
 namespace ProjetProgAvENSC1A
@@ -28,11 +29,6 @@ namespace ProjetProgAvENSC1A
                 {
                     "appName",
                     "--- PROJECT MANAGER ---"
-                },
-                {
-                    "userStatus",
-                    "Logged in as $userName | Level of accreditation: " +
-                    "<color value=green> $userPrivilege <color value=black>"
                 }
             });
         }
@@ -213,7 +209,7 @@ namespace ProjetProgAvENSC1A
 
         public void Debug()
         {
-
+            var a = ((PersonDataTable)DB[DBTable.Person]).GetPersonsOfType<Student>();
         }
 
         public void Launch()
@@ -226,24 +222,64 @@ namespace ProjetProgAvENSC1A
                 _user = LoginController.Authenticate(attempts);
             } while (_user.Privilege is Privilege.Unauthorized);
 
-            var userData = new Dictionary<string, string>()
-            {
-                {"userName", Username},
-                {"userPrivilege", UserPrivilege.ToString()}
-            };
+            Renderer.AddVisualResources(
+                "userStatus",
+                $"Logged in as {Username} | Level of accreditation: " +
+                $"<color value=green> {UserPrivilege} <color value=black>"
+            );
 
-            while (Route(userData))
+            while (Route())
             {
                 //
             }
         }
 
-        public bool Route(Dictionary<string, string> userData)
+        public bool Route()
         {
 
-            HomePage homepage = new HomePage(userData);
-            var input = Renderer.Render(homepage);
+            HomeView homepage = new HomeView();
 
+            var input = Renderer.Render(homepage);
+            string userRequest = input.GetSelectedValue();
+
+            switch (userRequest)
+            {
+                case "0":
+                    SortController.SortByPerson<Student>();
+                    break;
+                case "1":
+                    SortController.SortByPerson<Teacher>();
+                    break;
+                case "2":
+                    SortController.SortByPerson<Extern>();
+                    break;
+                case "3":
+                    SortController.SortByCourses();
+                    break;
+                case "4":
+                    SortController.SortBySchoolYear();
+                    break;
+                case "5":
+                    SortController.SortByPromotions();
+                    break;
+                case "6":
+                    SortController.SortByDateAsc();
+                    break;
+                case "7":
+                    SortController.SortByDateDesc();
+                    break;
+                case "8":
+                    SortController.SortByKeywords();
+                    break;
+                case "9":
+                    EditController.AddNewProject();
+                    break;
+                case "10":
+                    EditController.RemoveProject();
+                    break;
+                default:
+                    return false;
+            }
 
             return true;
         }

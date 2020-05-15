@@ -51,8 +51,6 @@ namespace ProjetProgAvENSC1A.Services
         /// <returns></returns>
         public bool RemoveEntry(string uuid);
 
-        // use of asynchronous json serializing process
-        // -> switch to async method
         /// <summary>
         /// Load data Json files from storage.
         /// </summary>

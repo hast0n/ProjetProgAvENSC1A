@@ -19,7 +19,7 @@ namespace ProjetProgAvENSC1A.Models
         public List<EntryType> Projects => App.DB[DBTable.Project].Entries.Where(entry =>
         {
             Project p = (Project)entry;
-            return p.Contributors.ContainsValue((Student)this);
+            return p.Contributors.ContainsValue((Person)this);
         }).ToList();
     }
 

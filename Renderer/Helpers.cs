@@ -11,11 +11,23 @@ namespace CliLayoutRenderTools
     // A simple class used to help the Renderer to frame content
     static class RendererExtensions
     {
+        /// <summary>
+        /// Left pad a string.
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="padding"></param>
+        /// <param name="removeOne"></param>
+        /// <returns></returns>
         public static string Pad(this string line, int padding, bool removeOne)
         {
             return $"{new string(' ', padding - (removeOne ? 1 : 0))}{line}";
         }
 
+        /// <summary>
+        /// Int extension: Get int parity.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static bool IsOdd(this int value)
         {
             return value % 2 != 0;
@@ -148,15 +160,16 @@ namespace CliLayoutRenderTools
         }
 
 
-        public static string GetSelectedValue(ImmutableDictionary<string, Dictionary<string, string>> input)
+
+        public static string GetSelectedValue(this ImmutableDictionary<int, Dictionary<string, string>> input)
         {
             try
             {
                 return input.FirstOrDefault(kvp =>
                     kvp.Value[Constants.SELECTED] == bool.TrueString)
-                    .Value[Constants.VALUE];
+                    .Value[Constants.INDEX];
             }
-            catch (NullReferenceException)
+            catch (KeyNotFoundException) // TODO: set correct expression to catch
             {
                 return null;
             }

@@ -6,14 +6,13 @@ using ProjetProgAvENSC1A.Models;
 
 namespace ProjetProgAvENSC1A.Views
 {
-    class HomePage : ContentView
+    class HomeView : ContentView
     {
-        public HomePage(Dictionary<string, string> userData)
+        public HomeView()
         {
             SharedResources = App.Renderer.VisualResources;
-            PageModifiers = userData;
 
-            bool isAllowed = userData["userPrivilege"] != Privilege.Spectator.ToString();
+            bool isAllowed = !(App.UserPrivilege is Privilege.Spectator);
 
             Layout = new List<string>()
             {

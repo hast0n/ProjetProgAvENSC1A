@@ -11,7 +11,7 @@ namespace ProjetProgAvENSC1A.Services.DataTables
 {
     class PersonDataTable : IDataTable
     {
-        private const string filePath = Constants.PERSON_FILEPATH;
+        private const string FilePath = Constants.PERSON_FILEPATH;
 
         private readonly List<EntryType> _entries;
         public List<EntryType> Entries => _entries.ToList(); // returns a copy of the entry list
@@ -57,7 +57,7 @@ namespace ProjetProgAvENSC1A.Services.DataTables
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 options.Converters.Add(new PersonConverter());
 
-                await using FileStream fs = File.Open(filePath, FileMode.OpenOrCreate);
+                await using FileStream fs = File.Open(FilePath, FileMode.OpenOrCreate);
                 var fileDump = JsonSerializer.DeserializeAsync<List<Person>>(fs, options);
 
                 tempEntries = fileDump.Result;
@@ -83,7 +83,7 @@ namespace ProjetProgAvENSC1A.Services.DataTables
         {
             try
             {
-                await using FileStream fs = File.Open(filePath, FileMode.Truncate, FileAccess.Write);
+                await using FileStream fs = File.Open(FilePath, FileMode.Truncate, FileAccess.Write);
 
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 options.Converters.Add(new PersonConverter());
@@ -108,5 +108,8 @@ namespace ProjetProgAvENSC1A.Services.DataTables
 
             return true;
         }
+
+        public List<Person> GetPersonsOfType<T>() => _entries
+            .Where(entry => entry is T).ToList().ConvertAll(entry => (Person)entry); 
     }
 }
