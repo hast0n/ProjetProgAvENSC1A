@@ -167,6 +167,10 @@ namespace ProjetProgAvENSC1A
                         Role.Secretaire,
                         s3
                     },
+                    {
+                        Role.Tuteur,
+                        t3
+                    },
                 }
             };
             #endregion
@@ -202,7 +206,7 @@ namespace ProjetProgAvENSC1A
             
             //DB[DBTable.User].AddEntry(u1);
             //DB[DBTable.User].AddEntry(u2);
-            
+
             // write on storage
             if (writeToStorage) DB.Persist();
         }

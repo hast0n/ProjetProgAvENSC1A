@@ -14,5 +14,13 @@ namespace ProjetProgAvENSC1A.Models
             Course c = (Course) entry;
             return c.Teachers.Contains(this);
         }).ToList();
+
+        public List<EntryType> CurrentProjects => App.DB[DBTable.Project].Entries.Where(entry =>
+        {
+            Project p = (Project)entry;
+            DateTime today = DateTime.UtcNow;
+            TimeSpan diff = p.EndDate - today;
+            return p.Contributors.ContainsValue(this) && (diff.Days>0);
+        }).ToList();
     }
 }

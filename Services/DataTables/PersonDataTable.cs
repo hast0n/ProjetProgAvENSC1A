@@ -108,7 +108,8 @@ namespace ProjetProgAvENSC1A.Services.DataTables
 
             return true;
         }
-
+        ///<summary>  This property returns Person of the chosen subclass 
+        ///</summary>
         public List<Person> GetPersonsOfType<T>() => _entries
             .Where(entry => entry is T).ToList().ConvertAll(entry => (Person)entry); 
     }

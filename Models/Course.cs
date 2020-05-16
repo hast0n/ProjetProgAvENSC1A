@@ -22,5 +22,17 @@ namespace ProjetProgAvENSC1A.Models
             Project p = (Project)entry;
             return p.Courses.Contains(this);
         }).ToList();
+
+        public string TeachersToString()
+        {
+            string teacher = "";
+            for (int  i = 0; i < this.Teachers.Count; i++) 
+            {
+                if (i != 0 & i != (this.Teachers.Count - 1)) { teacher += ", "; }
+                teacher += this.Teachers[i].FirstName + " " + this.Teachers[i].LastName;
+                if (i%2==0 & i!=(this.Teachers.Count-1)) { teacher += "\n"; }
+            }
+            return teacher;
+        }
     }
 }
