@@ -136,11 +136,11 @@ namespace ProjetProgAvENSC1A.Controllers
             switch (userRequest)
             {
                 case "0"://Currents projects
-                    if (target.GetType().Equals(typeof(Person))) { DisplayProjects((Person)target, true); }
+                    if (target.GetType().Equals(typeof(Student)) ^ target.GetType().Equals(typeof(Extern)) ^ target.GetType().Equals(typeof(Teacher))) { DisplayProjects((Person)target, true); }
                     else if(target.GetType().Equals(typeof(FormYear))) { DisplayProjects((FormYear)target, true); }
                     break;
                 case "1":
-                    if (target.GetType().Equals(typeof(Person))) { DisplayProjects((Person)target, false); }
+                    if (target.GetType().Equals(typeof(Student)) ^ target.GetType().Equals(typeof(Extern)) ^ target.GetType().Equals(typeof(Teacher))) { DisplayProjects((Person)target, false); }
                     else if (target.GetType().Equals(typeof(FormYear))) { DisplayProjects((FormYear)target, false); }
                     break;
                 //default:
@@ -171,14 +171,18 @@ namespace ProjetProgAvENSC1A.Controllers
 
             for (int i = 0; i < projects.Count; i++) conversionTable.Add($"{i}", projects[i].UUID);
 
-            EntryListView ListPage = new EntryListView(projects.ToDictionary(
+            ProjectListView ListPage = new ProjectListView(projects.ToDictionary(
                 p => conversionTable.First(kvp => kvp.Value.Equals(p.UUID)).Key,
-                p => $"{p.Topic}"), 
-                "topic"
+                p => $"{p.Topic}")
             );
-
-            var userRequest = App.Renderer.Render(ListPage);
-
+            if (conversionTable.Count == 0)
+            { //build a page : no projets
+            }
+            else
+            {
+                var userRequest = App.Renderer.Render(ListPage);
+                string uuid = conversionTable[userRequest.GetSelectedValue()];
+            }
         }
     }
 }
