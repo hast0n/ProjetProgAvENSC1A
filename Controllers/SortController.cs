@@ -13,6 +13,7 @@ namespace ProjetProgAvENSC1A.Controllers
     class SortController
     {
         ///<summary>  This method sorts Person by subclass in a view
+        ///and send you to the Current or All project view
         ///</summary>
         public static void SortByPerson<T>()
         {
@@ -35,12 +36,11 @@ namespace ProjetProgAvENSC1A.Controllers
 
             Person target = (Person)App.DB[DBTable.Person][uuid];
 
-            SortCurrentOrAllProjects<Person>(target);
-            //DisplayProjects(target);
+            SortCurrentOrAllProjects(target);
         }
 
         /// <summary>
-        /// This method presents all the courses
+        /// This method presents all the courses 
         /// </summary>
         public static void SortByCourses()
         {
@@ -62,7 +62,7 @@ namespace ProjetProgAvENSC1A.Controllers
 
             Course target = (Course)App.DB[DBTable.Courses][uuid];
 
-            DisplayProjects(target);
+            DisplayProjects(target,false);
         }
 
         public static void SortBySchoolYear()
@@ -85,8 +85,7 @@ namespace ProjetProgAvENSC1A.Controllers
 
             FormYear target = (FormYear)App.DB[DBTable.FormYear][uuid];
 
-            SortCurrentOrAllProjects<FormYear>(target);
-            //DisplayProjects(target);
+            SortCurrentOrAllProjects(target);
         }
 
         public static void SortByPromotions()
@@ -108,7 +107,7 @@ namespace ProjetProgAvENSC1A.Controllers
             string uuid = conversionTable[userRequest.GetSelectedValue()];
 
             Promotion target = (Promotion)App.DB[DBTable.Promotion][uuid];
-            DisplayProjects(target);
+            DisplayProjects(target, false);
         }
 
         public static void SortByDateAsc()
@@ -126,10 +125,8 @@ namespace ProjetProgAvENSC1A.Controllers
             throw new NotImplementedException();
         }
 
-        //To do : 
-        // 1 . Interface all or current projects 
-        // 2 . join those functions
-        private static void  SortCurrentOrAllProjects<T>(EntryType target)
+        
+        private static void  SortCurrentOrAllProjects(EntryType target)
         {
             
             CurrentOrAllView ListPage = new CurrentOrAllView();
@@ -139,12 +136,12 @@ namespace ProjetProgAvENSC1A.Controllers
             switch (userRequest)
             {
                 case "0"://Currents projects
-                    if (typeof(T) is Person){ DisplayProjects((Person)target, true); }
-                    else if(typeof(T) is FormYear) { DisplayProjects((FormYear)target, true); }
+                    if (target.GetType().Equals(typeof(Person))) { DisplayProjects((Person)target, true); }
+                    else if(target.GetType().Equals(typeof(FormYear))) { DisplayProjects((FormYear)target, true); }
                     break;
                 case "1":
-                    if (typeof(T) is Person) { DisplayProjects((Person)target, false); }
-                    else if (typeof(T) is FormYear) { DisplayProjects((FormYear)target, false); }
+                    if (target.GetType().Equals(typeof(Person))) { DisplayProjects((Person)target, false); }
+                    else if (target.GetType().Equals(typeof(FormYear))) { DisplayProjects((FormYear)target, false); }
                     break;
                 //default:
                 //    App.Launch();
@@ -152,23 +149,36 @@ namespace ProjetProgAvENSC1A.Controllers
             }
 
         }
-        private static void DisplayProjects(EntryType target, bool booleen)
+        private static void DisplayProjects(EntryType target, bool current)
         {
-            var bo = 2;
-            //var projects = target.Projects;
-        }
-        private static void DisplayProjects(Course target)
-        {
-            var projects = target.Projects;
-        }
-        private static void DisplayProjects(FormYear target, bool booleen)
-        {
-            if (booleen) { var projects = target.AllProjects; }
-            else { var projects = target.CurrentProjects; }
-        }
-        private static void DisplayProjects(Promotion target)
-        {
-            var projects = target.Projects;
+            List<Project> projects = new List<Project>();
+            if (current)
+            {
+                if (target.GetType().Equals(typeof(Student))) { projects = ((Student)target).CurrentPromotionProjects.ConvertAll(e=>(Project)e); }
+                else if (target.GetType().Equals(typeof(Extern))) { projects = ((Extern)target).CurrentProjects.ConvertAll(e => (Project)e); }
+                else if (target.GetType().Equals(typeof(Teacher))) { projects = ((Teacher)target).CurrentProjects.ConvertAll(e => (Project)e); }
+                else if (target.GetType().Equals(typeof(FormYear))) { projects =((FormYear)target).CurrentProjects.ConvertAll(e => (Project)e); }
+            }
+            else
+            {
+                if (target.GetType().Equals(typeof(Person))) { projects = ((Person)target).Projects.ConvertAll(e => (Project)e); }
+                else if (target.GetType().Equals(typeof(Course))) { projects = ((Course)target).Projects.ConvertAll(e => (Project)e); }
+                else if (target.GetType().Equals(typeof(FormYear))) { projects = ((FormYear)target).AllProjects.ConvertAll(e => (Project)e); }
+                else if (target.GetType().Equals(typeof(Promotion))) { projects = ((Promotion)target).Projects.ConvertAll(e => (Project)e); }
+            }
+
+            Dictionary<string, string> conversionTable = new Dictionary<string, string>();
+
+            for (int i = 0; i < projects.Count; i++) conversionTable.Add($"{i}", projects[i].UUID);
+
+            EntryListView ListPage = new EntryListView(projects.ToDictionary(
+                p => conversionTable.First(kvp => kvp.Value.Equals(p.UUID)).Key,
+                p => $"{p.Topic}"), 
+                "topic"
+            );
+
+            var userRequest = App.Renderer.Render(ListPage);
+
         }
     }
 }
