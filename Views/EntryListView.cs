@@ -40,7 +40,7 @@ namespace ProjetProgAvENSC1A.Views
                 },
                 {
                     "personHint",
-                    $"Select one of the following {entryType}s to display projects"
+                    $"Select one of the following {entryType}s to display projects:"
                 }
             };
         }

@@ -16,11 +16,18 @@ namespace ProjetProgAvENSC1A.Models
         public int Age { get; set; }
         public Constants.Gender Gender { get; set; }
 
+        public string FullName => $"{FirstName} {LastName}";
+
         public List<EntryType> Projects => App.DB[DBTable.Project].Entries.Where(entry =>
         {
             Project p = (Project)entry;
             return p.Contributors.ContainsValue((Person)this);
         }).ToList();
+
+        public override string ToString()
+        {
+            return FullName;
+        }
     }
 
     // From: https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-converters-how-to#support-polymorphic-deserialization

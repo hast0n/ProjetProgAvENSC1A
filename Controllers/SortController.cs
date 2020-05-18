@@ -18,7 +18,7 @@ namespace ProjetProgAvENSC1A.Controllers
         {
             var persons = ((PersonDataTable)App.DB[DBTable.Person]).GetPersonsOfType<T>();
 
-            // Renderer's selectors only accepts ints as value
+            // Renderer's selectors only accepts [0-9]{1,2} as value
             Dictionary<string, string> conversionTable = new Dictionary<string, string>();
 
             for (int i = 0; i < persons.Count; i++) conversionTable.Add($"{i}", persons[i].UUID);

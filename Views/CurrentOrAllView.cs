@@ -39,11 +39,11 @@ namespace ProjetProgAvENSC1A.Views
                     "entryList",
                     String.Join(App.Renderer.SplitChar, "",
                     "<selector value=0 text=' - Currents Projects '> ",
-                    "<selector value=1 text=' - All Projects'>")
+                    "<selector value=1 text=' - All Projects      '>")
                 },
                 {
                     "personHint",
-                    $"Select one of the following choices to display projects"
+                    "Select one of the following choices to display projects:"
                 }
             };
         }
