@@ -154,7 +154,7 @@ namespace CliLayoutRenderTools
 
                 if (value.Length.Equals(totalLength)) value = value.TrimEnd();
                 
-                dict[index][Constants.VALUE] = value[..^1];
+                if (value.Length > 0) dict[index][Constants.VALUE] = value[..^1];
             }
             catch (KeyNotFoundException) { /* DO NOTHING */ }
         }
@@ -191,6 +191,29 @@ namespace CliLayoutRenderTools
             catch (KeyNotFoundException) // TODO: set correct expression to catch
             {
                 return null;
+            }
+        }
+
+        public static List<string> GetUserInputs(this ImmutableDictionary<int, Dictionary<string, string>> dict)
+        {
+            List<string> inputs = new List<string>();
+
+            foreach (var keyValuePair in dict.Where(kvp =>
+                kvp.Value[Constants.TYPE].Equals(Constants.INPUT)))
+            {
+                inputs.Add(keyValuePair.Value[Constants.VALUE]);
+            }
+
+            return inputs;
+        }
+
+        public static void TrimInputFields(this Dictionary<int, Dictionary<string, string>> dict)
+        {
+            foreach (var keyValuePair in dict.Where(kvp =>
+                kvp.Value[Constants.TYPE].Equals(Constants.INPUT)))
+            {
+                string value = keyValuePair.Value[Constants.VALUE];
+                keyValuePair.Value[Constants.VALUE] = value.TrimEnd();
             }
         }
     }

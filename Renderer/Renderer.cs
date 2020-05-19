@@ -231,7 +231,7 @@ namespace CliLayoutRenderTools
                 },
                 {
                     "pressAnyHint",
-                    "<color value=white>Press any key to continue...<color value=black>"
+                    "<color value=white> Press any key to continue... <color value=black>"
                 }
             };
         }
@@ -476,6 +476,8 @@ namespace CliLayoutRenderTools
                 var kvpEnumerable = modifierDictionary.Where(kvp =>
                     kvp.Value[Constants.TYPE].Equals(Constants.INPUT));
                 
+                modifierDictionary.TrimInputFields();
+
                 res = kvpEnumerable.ToImmutableDictionary();
             }
             else if (modifierDictionary.ContainsField(Constants.SELECTOR))

@@ -174,23 +174,7 @@ namespace ProjetProgAvENSC1A
                 }
             };
             #endregion
-
-            #region define users (1)
-            //User u1 = new User()
-            //{
-            //    Name = "admin",
-            //    Privilege = Privilege.Administrator,
-            //    PasswordHash = SHA.GenerateSHA512String("Bonjour")
-            //};
             
-            //User u2 = new User()
-            //{
-            //    Name = "toto",
-            //    Privilege = Privilege.Spectator,
-            //    PasswordHash = SHA.GenerateSHA512String("salut")
-            //};
-            #endregion
-
             foreach (var pers in new List<Person>() {t1, t2, t3, s1, s2, s3, e1})
                 DB[DBTable.Person].AddEntry(pers);
             
@@ -203,9 +187,6 @@ namespace ProjetProgAvENSC1A
             DB[DBTable.Promotion].AddEntry(p1);
             
             DB[DBTable.Project].AddEntry(proj1);
-            
-            //DB[DBTable.User].AddEntry(u1);
-            //DB[DBTable.User].AddEntry(u2);
 
             // write on storage
             if (writeToStorage) DB.Persist();
@@ -213,7 +194,7 @@ namespace ProjetProgAvENSC1A
 
         public void Debug()
         {
-            var a = ((PersonDataTable)DB[DBTable.Person]).GetPersonsOfType<Student>();
+            var debug = DB[DBTable.User].Entries;
         }
 
         public void Launch()

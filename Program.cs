@@ -10,7 +10,7 @@ namespace ProjetProgAvENSC1A
         {
             var app = new App();
             //app.GenerateSampleData(true);
-            app.Debug();
+            //app.Debug();
             app.Launch();
         }
     }
