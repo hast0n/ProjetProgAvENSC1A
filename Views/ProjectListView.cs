@@ -27,11 +27,11 @@ namespace ProjetProgAvENSC1A.Views
 
                 existingProjects ? "[personHintTrue]" : "[personHintFalse]",
                 "[emptyLine]",
-                existingProjects? "[entryList]" : "",
+                existingProjects ? "[entryList]" : "",
 
                 "3*[emptyLine]",
                 "botBar",
-                "selectorHint"
+                existingProjects ? "selectorHint" : "pressAny"
             };
 
             LocalResources = new Dictionary<string, string>()

@@ -18,6 +18,9 @@ namespace ProjetProgAvENSC1A.Models
 
         public string FullName => $"{FirstName} {LastName}";
 
+        /// <summary>
+        /// Returns all projects
+        /// </summary>
         public List<EntryType> Projects => App.DB[DBTable.Project].Entries.Where(entry =>
         {
             Project p = (Project)entry;
@@ -28,6 +31,17 @@ namespace ProjetProgAvENSC1A.Models
         {
             return FullName;
         }
+
+        /// <summary>
+        /// Return projects started but not ended
+        /// </summary>
+        public List<EntryType> ActiveProjects => App.DB[DBTable.Project].Entries.Where(entry =>
+        {
+            Project p = (Project)entry;
+            DateTime today = DateTime.UtcNow;
+            TimeSpan diff = p.EndDate - today;
+            return p.Contributors.ContainsValue(this) && (diff.Days > 0);
+        }).ToList();
     }
 
     // From: https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-converters-how-to#support-polymorphic-deserialization

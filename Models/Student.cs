@@ -10,18 +10,27 @@ namespace ProjetProgAvENSC1A.Models
     {
         public string Student_ID { get; set; }
 
-        public Promotion CurrentPromotion => (Promotion) Promotions.FirstOrDefault(entry =>
+        /// <summary>
+        /// Return this student's current promotion
+        /// </summary>
+        public Promotion CurrentPromotion => (Promotion)Promotions.FirstOrDefault(entry =>
         {
             Promotion prom = (Promotion) entry;
-            return prom.isCurrentPromotion;
+            return prom.Students.Contains(this) && prom.isCurrentPromotion;
         });
 
+        /// <summary>
+        /// Returns promotions in which this student was involved
+        /// </summary>
         public List<EntryType> Promotions => App.DB[DBTable.Promotion].Entries.Where(entry =>
         {
             Promotion p = (Promotion)entry;
             return p.Students.Contains(this);
         }).ToList();
 
+        /// <summary>
+        /// Return current year's projects for this student
+        /// </summary>
         public List<EntryType> CurrentPromotionProjects => App.DB[DBTable.Project].Entries.Where(entry =>
         {
             Project p = (Project)entry;

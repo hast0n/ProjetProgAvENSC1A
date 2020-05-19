@@ -125,8 +125,7 @@ namespace ProjetProgAvENSC1A.Controllers
             throw new NotImplementedException();
         }
 
-        
-        private static void  SortCurrentOrAllProjects(EntryType target)
+        private static void SortCurrentOrAllProjects(EntryType target)
         {
             
             CurrentOrAllView ListPage = new CurrentOrAllView();
@@ -149,6 +148,7 @@ namespace ProjetProgAvENSC1A.Controllers
             }
 
         }
+
         private static void DisplayProjects(EntryType target, bool current)
         {
             List<Project> projects = new List<Project>();
@@ -156,7 +156,7 @@ namespace ProjetProgAvENSC1A.Controllers
             {
                 if (target.GetType().Equals(typeof(Student))) { projects = ((Student)target).CurrentPromotionProjects.ConvertAll(e=>(Project)e); }
                 else if (target.GetType().Equals(typeof(Extern))) { projects = ((Extern)target).CurrentProjects.ConvertAll(e => (Project)e); }
-                else if (target.GetType().Equals(typeof(Teacher))) { projects = ((Teacher)target).CurrentProjects.ConvertAll(e => (Project)e); }
+                else if (target.GetType().Equals(typeof(Teacher))) { projects = ((Teacher)target).ActiveProjects.ConvertAll(e => (Project)e); }
                 else if (target.GetType().Equals(typeof(FormYear))) { projects =((FormYear)target).CurrentProjects.ConvertAll(e => (Project)e); }
             }
             else
@@ -175,14 +175,10 @@ namespace ProjetProgAvENSC1A.Controllers
                 p => conversionTable.First(kvp => kvp.Value.Equals(p.UUID)).Key,
                 p => $"{p.Topic}")
             );
-            if (conversionTable.Count == 0)
-            { //build a page : no projets
-            }
-            else
-            {
-                var userRequest = App.Renderer.Render(ListPage);
-                string uuid = conversionTable[userRequest.GetSelectedValue()];
-            }
+
+            var userRequest = App.Renderer.Render(ListPage);
+            string uuid = conversionTable[userRequest.GetSelectedValue()];
+
         }
     }
 }

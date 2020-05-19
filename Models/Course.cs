@@ -17,6 +17,8 @@ namespace ProjetProgAvENSC1A.Models
         [JsonPropertyName("Teachers")]
         public List<string> JsonTeachUUID { get; set; }
 
+        public string TeachersNames => String.Join(", ", Teachers);
+
         public List<EntryType> Projects => App.DB[DBTable.Project].Entries.Where(entry =>
         {
             Project p = (Project)entry;
@@ -34,16 +36,5 @@ namespace ProjetProgAvENSC1A.Models
             }
             return teacher;
         }
-
-        // Après avoir rajouter la surchage ToString() dans Person
-        // tu peux simplifier cette boucle en :
-        // Course Anglais = new Course() { ... };
-        // String.Join(", ", Anglais.Teachers)
-        // Ou tout simplement créer une nouvelle propriété :
-        public string TeachersNames => String.Join(", ", Teachers);
-        // La méthode String.Join() vient enchainer des éléments en une seule chaine
-        // de caractères avec le séparateur spécifier qui vient s'insérer
-        // entre chacune de ces chaines. Il n'y aura donc de séparateur ni au début,
-        // ni à la fin
     }
 }
