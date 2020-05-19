@@ -4,6 +4,7 @@ using System.Text;
 using System.Linq;
 using CliLayoutRenderTools;
 using ProjetProgAvENSC1A.Models;
+using ProjetProgAvENSC1A.Renderer;
 
 namespace ProjetProgAvENSC1A.Views
 {

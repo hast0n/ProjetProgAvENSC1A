@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CliLayoutRenderTools;
+using ProjetProgAvENSC1A.Renderer;
 
 namespace ProjetProgAvENSC1A.Views
 {

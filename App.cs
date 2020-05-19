@@ -13,7 +13,7 @@ namespace ProjetProgAvENSC1A
     class App
     {
         public static DataBase DB = new DataBase();
-        public static Renderer Renderer = new Renderer() { FrameWidth = 110 };
+        public static Renderer.Renderer Renderer = new Renderer.Renderer() { FrameWidth = 110 };
         
         private static User _user = new User();
         public static string Username => _user.Name;
@@ -194,7 +194,7 @@ namespace ProjetProgAvENSC1A
 
         public void Debug()
         {
-            var debug = DB[DBTable.User].Entries;
+            Console.WriteLine(Guid.NewGuid());
         }
 
         public void Launch()
@@ -221,7 +221,6 @@ namespace ProjetProgAvENSC1A
 
         public bool Route()
         {
-
             HomeView homepage = new HomeView();
 
             var input = Renderer.Render(homepage);
@@ -270,8 +269,3 @@ namespace ProjetProgAvENSC1A
         }
     }
 }
-
-// TODO: Lock edition to active field
-// TODO: Press Return to edit next field
-// TODO:    --> add "completed" attribute to modifierDictionary for inputs
-// TODO: Empty active field & backspace to access previous one

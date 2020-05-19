@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Text.RegularExpressions;
+using CliLayoutRenderTools;
 using ProjetProgAvENSC1A.Services;
 using static System.String;
 
@@ -18,7 +18,7 @@ using static System.String;
  //TODO: /!\ prevent & feedback over use of input and selector on same page /!\
 
 
-namespace CliLayoutRenderTools
+namespace ProjetProgAvENSC1A.Renderer
 {
     public class Renderer
     {
