@@ -45,20 +45,20 @@ namespace ProjetProgAvENSC1A.Views
                 {
                     "userInput",
                     String.Join(splitChar, ""+
-                        "                   ┌────────────────┐",
-                        "Enter Username :   │  <input regex=[A-Za-z0-9\\s] length=12>  │",
-                        "                   └────────────────┘")
+                        "                   ┌─────────────────┐",
+                        "Enter Username :   │ <input regex='[\\w0-9 ]' length=15> │",
+                        "                   └─────────────────┘")
                 },
                 {
                     "pswInput",
                     String.Join(splitChar, ""+
-                        "                   ┌────────────────┐",
-                        "Enter Password :   │  <input regex=[A-Za-z0-9] length=12>  │",
-                        "                   └────────────────┘")
+                        "                   ┌─────────────────┐",
+                        "Enter Password :   │ <input regex='[\\w0-9 ]' length=15 hidden=true> │",
+                        "                   └─────────────────┘")
                 },
                 {
                     "hitEnterHint",
-                    "Press Enter to continue..."
+                    "<color value=white> Fill in your credentials ans press Enter to validate... <color value=black>"
                 }
             };
         }

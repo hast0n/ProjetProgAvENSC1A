@@ -78,7 +78,8 @@ namespace CliLayoutRenderTools
                 //      -> length attr comes before regex attr
                 //      -> no regex attribute
                 "input",
-                @"<input (?:regex=([^\s]+)){1}(?: length=([0-9]{1,2}))?>{1}"
+                @"<input (?:regex='([^\r\n\t\f\v]+)){1}'(?: length=([0-9]{1,2}))?(?: hidden=(true|false))?>{1}"
+                //@"<input (?:regex='([^\r\n\t\f\v]+)){1}'(?: length=([0-9]{1,2}))?>{1}"
             },
             {
                 // Every character is allowed in the text attribute
@@ -92,6 +93,8 @@ namespace CliLayoutRenderTools
 
         // Default placeholder for input
         public string DefaultInputPlaceholder;
+
+        public readonly string[] inputBreakers;
 
         // Boolean that asserts if inputs are being allowed or not
         //public bool CanInput;
@@ -145,6 +148,7 @@ namespace CliLayoutRenderTools
             VerticalLineChar = '│';
             SplitChar = '\n';
             DefaultInputPlaceholder = " ";
+            inputBreakers = new string[] {Constants.BACKSPACE, Constants.CARRIAGE_RETURN};
 
             // Define basic console colors dictionary to easily access them
             ConsoleBackgroundColors = new Dictionary<string, ConsoleColor>()
@@ -226,7 +230,8 @@ namespace CliLayoutRenderTools
                     ""
                 },
                 {
-                    "pressAnyHint", "Press any key to continue..."
+                    "pressAnyHint",
+                    "<color value=white>Press any key to continue...<color value=black>"
                 }
             };
         }
@@ -541,8 +546,9 @@ namespace CliLayoutRenderTools
 
             while (modifierDictionary.Count > 0)
             {
-                // Prevent triggering for b, r or n in \b, \r or \n
+                // Prevent triggering for b, r ,n in \b, \r or \n
                 string currentRegexPattern = $"^{modifierDictionary[inputIndex][Constants.REGEX]}$";
+                bool isHiddenInput = modifierDictionary[inputIndex][Constants.HIDDEN] == bool.TrueString;
                 string input = Input;
                 
                 while (!Regex.IsMatch(input, currentRegexPattern))
@@ -555,22 +561,38 @@ namespace CliLayoutRenderTools
                         break;
                     }
 
-                    if (input.Equals(Constants.CARRIAGE_RETURN) && modifierDictionary.GetFirstUnsetInput() == 0)
+                    if (input.Equals(Constants.CARRIAGE_RETURN))
                     {
-                        return;
+                        int index = modifierDictionary.GetFirstUnsetInput();
+
+                        if (index != 0) 
+                        {
+                            string v = modifierDictionary[index][Constants.VALUE];
+                            int l = int.Parse(modifierDictionary[index][Constants.LENGTH]);
+
+                            modifierDictionary[index][Constants.VALUE] = v.PadRight(l);
+                        }
+
+                        if (modifierDictionary.IsReadyForReturn())
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
 
                     input = Input;
                 }
 
-                if (!new string[] { Constants.BACKSPACE, Constants.CARRIAGE_RETURN }.Contains(input))
+                if (!inputBreakers.Contains(input))
                 {
                     int length = int.Parse(modifierDictionary[inputIndex][Constants.LENGTH]);
                     string userInput = modifierDictionary[inputIndex][Constants.VALUE];
                     string res = $"{userInput}{input}";
 
-                    modifierDictionary[inputIndex][Constants.VALUE] = $"{userInput}{input}"
-                        [..(res.Length > length ? ^1 : ^0)];
+                    modifierDictionary[inputIndex][Constants.VALUE] = res[..(res.Length > length ? ^1 : ^0)];
                 }
 
                 RenderScreen(pageString, modifierDictionary);
@@ -619,7 +641,7 @@ namespace CliLayoutRenderTools
                             replacement = new string(
                                 char.Parse(DefaultInputPlaceholder), 
                                 int.Parse(length));
-                            
+                            bool.Parse("true");
                             modifierDictionary[modIndex] = new Dictionary<string, string>()
                             {
                                 {
@@ -642,6 +664,12 @@ namespace CliLayoutRenderTools
                                     // Placeholder for user input
                                     Constants.VALUE,
                                     Empty
+                                },
+                                {
+                                    Constants.HIDDEN,
+                                    group[3].Value.Equals(string.Empty)
+                                        ? bool.FalseString
+                                        : bool.Parse(group[3].Value).ToString()
                                 }
                             };
 
@@ -716,10 +744,14 @@ namespace CliLayoutRenderTools
             return output;
         }
 
+        /// <summary>
+        /// Refresh current view with given data
+        /// </summary>
+        /// <param name="screenBuilder"></param>
+        /// <param name="modifierDictionary"></param>
         private void RenderScreen(StringBuilder screenBuilder,
             Dictionary<int, Dictionary<string, string>> modifierDictionary)
         {
-            // Takes care of displaying colors and inputs values
 
             Console.Clear();
             // Set the index to which the frame has been rendered
@@ -784,6 +816,7 @@ namespace CliLayoutRenderTools
                 else
                 {
                     // Entering input context
+                    bool isHiddenField = bool.Parse(kvp.Value[Constants.HIDDEN]);
 
                     char[] userInput = kvp.Value[Constants.VALUE].ToCharArray();
                     int currentLength = userInput.Length;
@@ -792,7 +825,9 @@ namespace CliLayoutRenderTools
                     for (int i = 0; i < maxLength; i++)
                     {
                         screenBuilder[kvp.Key + i] = i < currentLength
-                            ? userInput[i]
+                            ? isHiddenField
+                                ? Constants.HIDDEN_CHAR 
+                                : userInput[i]
                             : kvp.Value[Constants.REPLACEMENT][i];
                     }
                 }

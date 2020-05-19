@@ -23,7 +23,7 @@ namespace ProjetProgAvENSC1A.Services
         public const string LENGTH = "length";
         public const string VALUE = "value";
         public const string SELECTED = "selected";
-        
+        public const string HIDDEN = "hidden";
         
         public const string SELECTOR_BACKWARD = "z";
         public const string SELECTOR_FORWARD = "s";
@@ -35,6 +35,7 @@ namespace ProjetProgAvENSC1A.Services
         public const string PROMOTION_FILEPATH = @"data\promotions.json";
         public const string USER_FILEPATH = @"data\users.json";
         
+        public const char HIDDEN_CHAR = '*';
 
         public enum TypeDeliverable
         {
