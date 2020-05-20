@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using CliLayoutRenderTools;
@@ -12,8 +13,8 @@ namespace ProjetProgAvENSC1A.Controllers
 {
     class SortController
     {
-        ///<summary>  This method sorts Person by subclass in a view
-        ///and send you to the Current or All project view
+        ///<summary>  This method sorts Person by subclass, calls EntryListView for display
+        ///and calls the SortCurrentOrAllProject method
         ///</summary>
         public static void SortByPerson<T>()
         {
@@ -26,7 +27,7 @@ namespace ProjetProgAvENSC1A.Controllers
 
             EntryListView ListPage = new EntryListView(persons.ToDictionary(
                 p => conversionTable.First(kvp => kvp.Value.Equals(p.UUID)).Key,
-                p => $"{p.FirstName} {p.LastName}"),
+                p => $"{p.ToString()}"),
                 typeof(T).Name.ToLower()
             );
 
@@ -40,7 +41,8 @@ namespace ProjetProgAvENSC1A.Controllers
         }
 
         /// <summary>
-        /// This method presents all the courses 
+        /// This method sorts all the courses, calls EntryListView for display
+        /// and calls the DisplayProject method
         /// </summary>
         public static void SortByCourses()
         {
@@ -61,8 +63,8 @@ namespace ProjetProgAvENSC1A.Controllers
             string uuid = conversionTable[userRequest.GetSelectedValue()];
 
             Course target = (Course)App.DB[DBTable.Courses][uuid];
-
-            DisplayProjects(target,false);
+            List<Project> projects = ((Course)target).Projects.ConvertAll(e => (Project)e).OrderBy(x=>x.Topic).ToList();
+            DisplayProjects(projects);
         }
 
         public static void SortBySchoolYear()
@@ -75,7 +77,7 @@ namespace ProjetProgAvENSC1A.Controllers
 
             EntryListView ListPage = new EntryListView(schoolyear.ToDictionary(
                 s => conversionTable.First(kvp => kvp.Value.Equals(s.UUID)).Key,
-                s => $"{s.GradeName}"), // Peut-être changer en 1A, 2A,3A
+                s => $"{s.GradeName}"),
                 "school year"
             );
 
@@ -107,17 +109,24 @@ namespace ProjetProgAvENSC1A.Controllers
             string uuid = conversionTable[userRequest.GetSelectedValue()];
 
             Promotion target = (Promotion)App.DB[DBTable.Promotion][uuid];
-            DisplayProjects(target, false);
+            List<Project> projects = ((Promotion)target).Projects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList();
+            DisplayProjects(projects); ;
         }
 
         public static void SortByDateAsc()
         {
-            throw new NotImplementedException();
+            var projects = App.DB[DBTable.Project].Entries.ToList().ConvertAll(entry => (Project)entry);
+            projects = projects.OrderBy(e => e.EndDate).ToList();
+
+            DisplayProjects(projects);
         }
 
         public static void SortByDateDesc()
         {
-            throw new NotImplementedException();
+            var projects = App.DB[DBTable.Project].Entries.ToList().ConvertAll(entry => (Project)entry);
+            projects = projects.OrderBy(e => e.EndDate).Reverse().ToList();
+
+            DisplayProjects(projects);
         }
 
         public static void SortByKeywords()
@@ -128,45 +137,29 @@ namespace ProjetProgAvENSC1A.Controllers
         private static void SortCurrentOrAllProjects(EntryType target)
         {
             
-            CurrentOrAllView ListPage = new CurrentOrAllView();
+            CurrentOrAllView ListPage = new CurrentOrAllView(target.GetType().Equals(typeof(Student)));
             var input = App.Renderer.Render(ListPage);
             string userRequest = input.GetSelectedValue();
 
             switch (userRequest)
             {
-                case "0"://Currents projects
-                    if (target.GetType().Equals(typeof(Student)) ^ target.GetType().Equals(typeof(Extern)) ^ target.GetType().Equals(typeof(Teacher))) { DisplayProjects((Person)target, true); }
-                    else if(target.GetType().Equals(typeof(FormYear))) { DisplayProjects((FormYear)target, true); }
+                case "0"://All projects
+                    if (target.GetType().Equals(typeof(Student)) ^ target.GetType().Equals(typeof(Extern)) ^ target.GetType().Equals(typeof(Teacher))) { DisplayProjects(((Person)target).Projects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList()); }
+                    else if (target.GetType().Equals(typeof(FormYear))) { DisplayProjects(((FormYear)target).AllProjects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList()); }
                     break;
-                case "1":
-                    if (target.GetType().Equals(typeof(Student)) ^ target.GetType().Equals(typeof(Extern)) ^ target.GetType().Equals(typeof(Teacher))) { DisplayProjects((Person)target, false); }
-                    else if (target.GetType().Equals(typeof(FormYear))) { DisplayProjects((FormYear)target, false); }
+                case "1"://Currents projects
+                    if (target.GetType().Equals(typeof(Student)) ^ target.GetType().Equals(typeof(Extern)) ^ target.GetType().Equals(typeof(Teacher))) { DisplayProjects(((Person)target).ActiveProjects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList()); }
+                    else if(target.GetType().Equals(typeof(FormYear))) { DisplayProjects(((FormYear)target).CurrentProjects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList()); }
                     break;
-                //default:
-                //    App.Launch();
-                //    break;
+                case "2": // //Current promotion project
+                    if (target.GetType().Equals(typeof(Student))) { DisplayProjects(((Student)target).CurrentPromotionProjects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList()); }
+                    break;
             }
 
         }
 
-        private static void DisplayProjects(EntryType target, bool current)
+        private static void DisplayProjects(List<Project> projects)
         {
-            List<Project> projects = new List<Project>();
-            if (current)
-            {
-                if (target.GetType().Equals(typeof(Student))) { projects = ((Student)target).CurrentPromotionProjects.ConvertAll(e=>(Project)e); }
-                else if (target.GetType().Equals(typeof(Extern))) { projects = ((Extern)target).CurrentProjects.ConvertAll(e => (Project)e); }
-                else if (target.GetType().Equals(typeof(Teacher))) { projects = ((Teacher)target).ActiveProjects.ConvertAll(e => (Project)e); }
-                else if (target.GetType().Equals(typeof(FormYear))) { projects =((FormYear)target).CurrentProjects.ConvertAll(e => (Project)e); }
-            }
-            else
-            {
-                if (target.GetType().Equals(typeof(Person))) { projects = ((Person)target).Projects.ConvertAll(e => (Project)e); }
-                else if (target.GetType().Equals(typeof(Course))) { projects = ((Course)target).Projects.ConvertAll(e => (Project)e); }
-                else if (target.GetType().Equals(typeof(FormYear))) { projects = ((FormYear)target).AllProjects.ConvertAll(e => (Project)e); }
-                else if (target.GetType().Equals(typeof(Promotion))) { projects = ((Promotion)target).Projects.ConvertAll(e => (Project)e); }
-            }
-
             Dictionary<string, string> conversionTable = new Dictionary<string, string>();
 
             for (int i = 0; i < projects.Count; i++) conversionTable.Add($"{i}", projects[i].UUID);
@@ -177,7 +170,7 @@ namespace ProjetProgAvENSC1A.Controllers
             );
 
             var userRequest = App.Renderer.Render(ListPage);
-            string uuid = conversionTable[userRequest.GetSelectedValue()];
+            if (projects.Count!=0) { string uuid = conversionTable[userRequest.GetSelectedValue()]; }
 
         }
     }

@@ -173,6 +173,37 @@ namespace ProjetProgAvENSC1A
                     },
                 }
             };
+            Project proj2 = new Project()
+            {
+                Topic = "Projet d'anglais",
+                StartDate = new DateTime(2020, 01, 01),
+                EndDate = new DateTime(2020, 04, 01),
+                Deliverables = new List<Deliverable>()
+                {
+                    new Deliverable()
+                    {
+                        Type = TypeDeliverable.Rapport,
+                        Information = "Explain what cognitive sciences are"
+                    }
+                },
+                Courses = new List<Course>() { c1 },
+                Promotions = new List<Promotion>() { p1 },
+                Contributors = new Dictionary<Role, Person>()
+                {
+                    {
+                        Role.ChefDeProj,
+                        s1
+                    },
+                    {
+                        Role.RespoQuali,
+                        s2
+                    },
+                    {
+                        Role.RespoFH,
+                        s3
+                    }
+                }
+            };
             #endregion
             
             foreach (var pers in new List<Person>() {t1, t2, t3, s1, s2, s3, e1})
@@ -187,6 +218,7 @@ namespace ProjetProgAvENSC1A
             DB[DBTable.Promotion].AddEntry(p1);
             
             DB[DBTable.Project].AddEntry(proj1);
+            DB[DBTable.Project].AddEntry(proj2);
 
             // write on storage
             if (writeToStorage) DB.Persist();
