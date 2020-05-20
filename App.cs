@@ -173,6 +173,37 @@ namespace ProjetProgAvENSC1A
                     },
                 }
             };
+            Project proj2 = new Project()
+            {
+                Topic = "Projet d'anglais",
+                StartDate = new DateTime(2020, 01, 01),
+                EndDate = new DateTime(2020, 04, 01),
+                Deliverables = new List<Deliverable>()
+                {
+                    new Deliverable()
+                    {
+                        Type = TypeDeliverable.Rapport,
+                        Information = "Explain what cognitive sciences are"
+                    }
+                },
+                Courses = new List<Course>() { c1 },
+                Promotions = new List<Promotion>() { p1 },
+                Contributors = new Dictionary<Role, Person>()
+                {
+                    {
+                        Role.ChefDeProj,
+                        s1
+                    },
+                    {
+                        Role.RespoQuali,
+                        s2
+                    },
+                    {
+                        Role.RespoFH,
+                        s3
+                    }
+                }
+            };
             #endregion
 
             #region define users (1)
@@ -182,7 +213,7 @@ namespace ProjetProgAvENSC1A
             //    Privilege = Privilege.Administrator,
             //    PasswordHash = SHA.GenerateSHA512String("Bonjour")
             //};
-            
+
             //User u2 = new User()
             //{
             //    Name = "toto",
@@ -203,7 +234,8 @@ namespace ProjetProgAvENSC1A
             DB[DBTable.Promotion].AddEntry(p1);
             
             DB[DBTable.Project].AddEntry(proj1);
-            
+            DB[DBTable.Project].AddEntry(proj2);
+
             //DB[DBTable.User].AddEntry(u1);
             //DB[DBTable.User].AddEntry(u2);
 
