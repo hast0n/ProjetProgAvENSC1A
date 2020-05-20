@@ -542,9 +542,9 @@ namespace ProjetProgAvENSC1A.Renderer
             int currentIndex = firstFieldIndex;
 
             bool trim = false;
-            bool editing = true;
+            bool hasEnded = false;
 
-            while (editing)
+            while (true)
             {
                 string input = Input;
 
@@ -581,11 +581,17 @@ namespace ProjetProgAvENSC1A.Renderer
                         break;
 
                     case Constants.CARRIAGE_RETURN:
+                        
                         int length = int.Parse(modifierDictionary[currentIndex][Constants.LENGTH]);
 
                         modifierDictionary[currentIndex][Constants.VALUE] = currentValue.PadRight(length);
 
-                        currentIndex = modifierDictionary.GetNextInputFieldIndex(currentIndex);
+                        int nextIndex = modifierDictionary.GetNextInputFieldIndex(currentIndex);
+                        
+                        currentIndex = nextIndex != 0 ? nextIndex : currentIndex;
+
+                        if (nextIndex == 0) return;
+
                         break;
                 }
 

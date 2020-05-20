@@ -136,7 +136,8 @@ namespace CliLayoutRenderTools
             try
             {
                 return this.FirstOrDefault(kvp =>
-                    kvp.Value[Constants.SELECTED] == bool.TrueString)
+                    kvp.Value[Constants.TYPE].Equals(Constants.SELECTOR)
+                    && kvp.Value[Constants.SELECTED] == bool.TrueString)
                     .Value[Constants.INDEX];
             }
             catch (KeyNotFoundException) // TODO: set correct expression to catch

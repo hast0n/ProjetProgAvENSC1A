@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using CliLayoutRenderTools;
-using ProjetProgAvENSC1A.Models;
+﻿using ProjetProgAvENSC1A.Models;
 using ProjetProgAvENSC1A.Services;
 using ProjetProgAvENSC1A.Services.DataTables;
 using ProjetProgAvENSC1A.Views;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ProjetProgAvENSC1A.Controllers
 {
