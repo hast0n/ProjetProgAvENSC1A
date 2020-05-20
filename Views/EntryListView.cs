@@ -24,8 +24,10 @@ namespace ProjetProgAvENSC1A.Views
                 "topBar",
                 "3*[emptyLine]",
 
-                "[personHint]",
+                "[entryHint]",
+
                 "[emptyLine]",
+
                 "[entryList]",
 
                 "3*[emptyLine]",
@@ -40,7 +42,7 @@ namespace ProjetProgAvENSC1A.Views
                     GetFormattedData(entries)
                 },
                 {
-                    "personHint",
+                    "entryHint",
                     $"Select one of the following {entryType}s to display projects:"
                 }
             };
