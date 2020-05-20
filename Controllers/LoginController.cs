@@ -23,7 +23,7 @@ namespace ProjetProgAvENSC1A.Controllers
 
             //User user = (User)App.DB[DBTable.User].Entries.Find(entry =>
             //{
-            //    User u = (User) entry;
+            //    User u = (User)entry;
             //    return u.PasswordHash.Equals(hashRequest) && u.Name.Equals(nameRequest);
             //});
 

@@ -132,7 +132,7 @@ namespace ProjetProgAvENSC1A
             };
             #endregion
 
-            #region define projects (1)
+            #region define projects (2)
             Project proj1 = new Project()
             {
                 Topic = "Projet de programmation",

@@ -13,8 +13,8 @@ namespace ProjetProgAvENSC1A.Controllers
 {
     class SortController
     {
-        ///<summary>  This method sorts Person by subclass, calls EntryListView for display
-        ///and calls the SortCurrentOrAllProject method
+        ///<summary>  This method sorts Person by subclass into a list, and displays it by calling a view
+        ///Calls the method for the next sorting: SortCurrentOrAllProject method
         ///</summary>
         public static void SortByPerson<T>()
         {
@@ -41,8 +41,8 @@ namespace ProjetProgAvENSC1A.Controllers
         }
 
         /// <summary>
-        /// This method sorts all the courses, calls EntryListView for display
-        /// and calls the DisplayProject method
+        /// This method sorts all the courses into a list, and displays it by calling a view
+        /// Calls the  method for the next sorting: DisplayProject method
         /// </summary>
         public static void SortByCourses()
         {
@@ -64,9 +64,12 @@ namespace ProjetProgAvENSC1A.Controllers
 
             Course target = (Course)App.DB[DBTable.Courses][uuid];
             List<Project> projects = ((Course)target).Projects.ConvertAll(e => (Project)e).OrderBy(x=>x.Topic).ToList();
-            DisplayProjects(projects);
+            DisplayProjectList(projects);
         }
 
+        ///<summary>  This method sorts SchoolYear data into a list and displays it by calling a view
+        ///Calls the  method for the next sorting: SortCurrentOrAllProject method
+        ///</summary>
         public static void SortBySchoolYear()
         {
             var schoolyear = App.DB[DBTable.FormYear].Entries.ToList().ConvertAll(entry => (FormYear)entry);
@@ -90,6 +93,9 @@ namespace ProjetProgAvENSC1A.Controllers
             SortCurrentOrAllProjects(target);
         }
 
+        ///<summary>  This method sorts all Promotions into a list and displays it by calling a view
+        ///Calls the  method for the next sorting: SortCurrentOrAllProject method
+        ///</summary>
         public static void SortByPromotions()
         {
             var promo = App.DB[DBTable.Promotion].Entries.ToList().ConvertAll(entry => (Promotion)entry);
@@ -110,30 +116,55 @@ namespace ProjetProgAvENSC1A.Controllers
 
             Promotion target = (Promotion)App.DB[DBTable.Promotion][uuid];
             List<Project> projects = ((Promotion)target).Projects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList();
-            DisplayProjects(projects); ;
+            DisplayProjectList(projects); ;
         }
 
+        ///<summary>  This method sorts all Projects by dates (oldest to newest)
+        ///and calls the  method for the display
+        ///</summary>
         public static void SortByDateAsc()
         {
             var projects = App.DB[DBTable.Project].Entries.ToList().ConvertAll(entry => (Project)entry);
             projects = projects.OrderBy(e => e.EndDate).ToList();
 
-            DisplayProjects(projects);
+            DisplayProjectList(projects);
         }
 
+        ///<summary>  This method sorts all Projects by dates (newest to oldest)
+        ///and calls the  method for the display
+        ///</summary>
         public static void SortByDateDesc()
         {
             var projects = App.DB[DBTable.Project].Entries.ToList().ConvertAll(entry => (Project)entry);
             projects = projects.OrderBy(e => e.EndDate).Reverse().ToList();
 
-            DisplayProjects(projects);
+            DisplayProjectList(projects);
         }
 
+        ///<summary>  This method sorts all projects based on the input
+        ///and calls the  method for the display
+        ///</summary>
         public static void SortByKeywords()
         {
-            throw new NotImplementedException();
+            var searchView = new SearchView();
+            var userRequest = App.Renderer.Render(searchView);
+
+            var inputs = userRequest.GetUserInputs();
+            string keyword = inputs[0].ToLower();
+
+            var keywordProjects = App.DB[DBTable.Project].Entries.Where(entry =>
+            {
+                Project p = (Project)entry;
+                return p.Topic.ToLower().Contains(keyword);
+            }).ToList().ConvertAll(e=>(Project)e);
+
+    
+            DisplayProjectList(keywordProjects);
         }
 
+        ///<summary>  This method sorts the projects with three options : all, current, promotion
+        ///and calls the  method for the display
+        ///</summary>
         private static void SortCurrentOrAllProjects(EntryType target)
         {
             
@@ -144,21 +175,23 @@ namespace ProjetProgAvENSC1A.Controllers
             switch (userRequest)
             {
                 case "0"://All projects
-                    if (target.GetType().Equals(typeof(Student)) ^ target.GetType().Equals(typeof(Extern)) ^ target.GetType().Equals(typeof(Teacher))) { DisplayProjects(((Person)target).Projects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList()); }
-                    else if (target.GetType().Equals(typeof(FormYear))) { DisplayProjects(((FormYear)target).AllProjects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList()); }
+                    if (target.GetType().Equals(typeof(Student)) ^ target.GetType().Equals(typeof(Extern)) ^ target.GetType().Equals(typeof(Teacher))) { DisplayProjectList(((Person)target).Projects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList()); }
+                    else if (target.GetType().Equals(typeof(FormYear))) { DisplayProjectList(((FormYear)target).AllProjects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList()); }
                     break;
                 case "1"://Currents projects
-                    if (target.GetType().Equals(typeof(Student)) ^ target.GetType().Equals(typeof(Extern)) ^ target.GetType().Equals(typeof(Teacher))) { DisplayProjects(((Person)target).ActiveProjects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList()); }
-                    else if(target.GetType().Equals(typeof(FormYear))) { DisplayProjects(((FormYear)target).CurrentProjects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList()); }
+                    if (target.GetType().Equals(typeof(Student)) ^ target.GetType().Equals(typeof(Extern)) ^ target.GetType().Equals(typeof(Teacher))) { DisplayProjectList(((Person)target).ActiveProjects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList()); }
+                    else if(target.GetType().Equals(typeof(FormYear))) { DisplayProjectList(((FormYear)target).CurrentProjects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList()); }
                     break;
                 case "2": // //Current promotion project
-                    if (target.GetType().Equals(typeof(Student))) { DisplayProjects(((Student)target).CurrentPromotionProjects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList()); }
+                    if (target.GetType().Equals(typeof(Student))) { DisplayProjectList(((Student)target).CurrentPromotionProjects.ConvertAll(e => (Project)e).OrderBy(x => x.Topic).ToList()); }
                     break;
             }
 
         }
 
-        private static void DisplayProjects(List<Project> projects)
+        ///<summary>  This method displays the projects selected into a list
+        ///</summary>
+        private static void DisplayProjectList(List<Project> projects)
         {
             Dictionary<string, string> conversionTable = new Dictionary<string, string>();
 
@@ -170,8 +203,22 @@ namespace ProjetProgAvENSC1A.Controllers
             );
 
             var userRequest = App.Renderer.Render(ListPage);
-            if (projects.Count!=0) { string uuid = conversionTable[userRequest.GetSelectedValue()]; }
+            if (projects.Count!=0) 
+            { 
+                string uuid = conversionTable[userRequest.GetSelectedValue()];
+                Project projectTarget = (Project)App.DB[DBTable.Project][uuid];
+                DisplayProject(projectTarget);
 
+            }
+
+        }
+
+        ///<summary>  This method call a view in order to display the project selected
+        ///</summary>
+        private static void DisplayProject(Project project)
+        {
+            ProjectView TargetPage = new ProjectView(project);
+            var userRequest = App.Renderer.Render(TargetPage);
         }
     }
 }
