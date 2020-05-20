@@ -13,7 +13,7 @@ namespace ProjetProgAvENSC1A
     class App
     {
         public static DataBase DB = new DataBase();
-        public static Renderer Renderer = new Renderer() { FrameWidth = 110 };
+        public static Renderer.Renderer Renderer = new Renderer.Renderer() { FrameWidth = 110 };
         
         private static User _user = new User();
         public static string Username => _user.Name;
@@ -205,23 +205,7 @@ namespace ProjetProgAvENSC1A
                 }
             };
             #endregion
-
-            #region define users (1)
-            //User u1 = new User()
-            //{
-            //    Name = "admin",
-            //    Privilege = Privilege.Administrator,
-            //    PasswordHash = SHA.GenerateSHA512String("Bonjour")
-            //};
-
-            //User u2 = new User()
-            //{
-            //    Name = "toto",
-            //    Privilege = Privilege.Spectator,
-            //    PasswordHash = SHA.GenerateSHA512String("salut")
-            //};
-            #endregion
-
+            
             foreach (var pers in new List<Person>() {t1, t2, t3, s1, s2, s3, e1})
                 DB[DBTable.Person].AddEntry(pers);
             
@@ -236,16 +220,13 @@ namespace ProjetProgAvENSC1A
             DB[DBTable.Project].AddEntry(proj1);
             DB[DBTable.Project].AddEntry(proj2);
 
-            //DB[DBTable.User].AddEntry(u1);
-            //DB[DBTable.User].AddEntry(u2);
-
             // write on storage
             if (writeToStorage) DB.Persist();
         }
 
         public void Debug()
         {
-            var a = ((PersonDataTable)DB[DBTable.Person]).GetPersonsOfType<Student>();
+            Console.WriteLine(Guid.NewGuid());
         }
 
         public void Launch()
@@ -272,7 +253,6 @@ namespace ProjetProgAvENSC1A
 
         public bool Route()
         {
-
             HomeView homepage = new HomeView();
 
             var input = Renderer.Render(homepage);
@@ -321,8 +301,3 @@ namespace ProjetProgAvENSC1A
         }
     }
 }
-
-// TODO: Lock edition to active field
-// TODO: Press Return to edit next field
-// TODO:    --> add "completed" attribute to modifierDictionary for inputs
-// TODO: Empty active field & backspace to access previous one

@@ -24,7 +24,7 @@ namespace CliLayoutRenderTools
         }
 
         /// <summary>
-        /// Int extension: Get int parity.
+        /// Returns int parity.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -34,31 +34,40 @@ namespace CliLayoutRenderTools
         }
 
 
-
+        /// <summary>
+        /// Return a bool indicating if user has already input data.
+        /// </summary>
+        /// <param name="dict"></param>
+        /// <returns></returns>
         public static bool HasSetModifiers(this Dictionary<int, Dictionary<string, string>> dict)
         {
-            // Return a bool indicating if user has already input data
             return dict
                 .Where(x => x.Value[Constants.TYPE].Equals(Constants.INPUT))
                 .Any(x => !string.IsNullOrEmpty(x.Value[Constants.VALUE]));
         }
 
+        /// <summary>
+        /// Returns index of first unset input modifier.
+        /// </summary>
+        /// <param name="dict"></param>
+        /// <returns></returns>
         public static int GetFirstUnsetInput(this Dictionary<int, Dictionary<string, string>> dict)
         {
-            // Get index of first unset input modifier
             return dict
-                .Where(kvp => kvp.Value[Constants.TYPE]
-                    .Equals(Constants.INPUT))
+                .Where(kvp => kvp.Value[Constants.TYPE].Equals(Constants.INPUT))
                 .OrderBy(kvp => kvp.Key)
                 .FirstOrDefault(kvp =>
-                    kvp.Value[Constants.VALUE].Length
-                    != int.Parse(kvp.Value[Constants.LENGTH]))
+                    kvp.Value[Constants.VALUE].Length != int.Parse(kvp.Value[Constants.LENGTH]))
                 .Key;
         }
 
+        /// <summary>
+        /// Returns index of Last set input modifier.
+        /// </summary>
+        /// <param name="dict"></param>
+        /// <returns></returns>
         public static int GetLastSetInput(this Dictionary<int, Dictionary<string, string>> dict)
         {
-            // Get index of Last set input modifier
             return dict
                 .Where(kvp => kvp.Value[Constants.TYPE]
                     .Equals(Constants.INPUT))
@@ -135,23 +144,25 @@ namespace CliLayoutRenderTools
                 int index = dict.GetInputFieldIndex();
 
                 // Switch to previous input field if current one is empty
-                if (dict[index][Constants.VALUE].Length == 0)
+                if (dict[index][Constants.VALUE].TrimEnd().Length == 0)
                 {
                     index = dict.GetLastSetInput();
                 }
 
                 string value = dict[index][Constants.VALUE];
-                // TODO: verify behaviour when approaching index 0
-                dict[index][Constants.VALUE] = value[..^1];
+                int totalLength = int.Parse(dict[index][Constants.LENGTH]);
+
+                if (value.Length.Equals(totalLength)) value = value.TrimEnd();
+                
+                if (value.Length > 0) dict[index][Constants.VALUE] = value[..^1];
             }
             catch (KeyNotFoundException) { /* DO NOTHING */ }
         }
 
         public static int GetInputFieldIndex(this Dictionary<int, Dictionary<string, string>> dict)
         {
-            return dict.GetFirstUnsetInput() == 0 
-                ? dict.GetLastSetInput()
-                : dict.GetFirstUnsetInput();
+            var m = dict.GetFirstUnsetInput();
+            return m == 0 ? dict.GetLastSetInput() : m;
         }
         
         public static bool ContainsField(this Dictionary<int, Dictionary<string, string>> dict, string fieldType)
@@ -160,6 +171,14 @@ namespace CliLayoutRenderTools
         }
 
 
+        public static bool IsReadyForReturn(this Dictionary<int, Dictionary<string, string>> dict)
+        {
+            return dict.Where(kvp =>
+                kvp.Value[Constants.TYPE].Equals(Constants.INPUT))
+                .All(kvp =>
+                    kvp.Value[Constants.VALUE].Length
+                    .Equals(int.Parse(kvp.Value[Constants.LENGTH])));
+        }
 
         public static string GetSelectedValue(this ImmutableDictionary<int, Dictionary<string, string>> input)
         {
@@ -172,6 +191,29 @@ namespace CliLayoutRenderTools
             catch (KeyNotFoundException) // TODO: set correct expression to catch
             {
                 return null;
+            }
+        }
+
+        public static List<string> GetUserInputs(this ImmutableDictionary<int, Dictionary<string, string>> dict)
+        {
+            List<string> inputs = new List<string>();
+
+            foreach (var keyValuePair in dict.Where(kvp =>
+                kvp.Value[Constants.TYPE].Equals(Constants.INPUT)))
+            {
+                inputs.Add(keyValuePair.Value[Constants.VALUE]);
+            }
+
+            return inputs;
+        }
+
+        public static void TrimInputFields(this Dictionary<int, Dictionary<string, string>> dict)
+        {
+            foreach (var keyValuePair in dict.Where(kvp =>
+                kvp.Value[Constants.TYPE].Equals(Constants.INPUT)))
+            {
+                string value = keyValuePair.Value[Constants.VALUE];
+                keyValuePair.Value[Constants.VALUE] = value.TrimEnd();
             }
         }
     }

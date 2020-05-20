@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using CliLayoutRenderTools;
 using ProjetProgAvENSC1A.Models;
+using ProjetProgAvENSC1A.Services;
 using ProjetProgAvENSC1A.Views;
 
 namespace ProjetProgAvENSC1A.Controllers
@@ -11,19 +13,21 @@ namespace ProjetProgAvENSC1A.Controllers
     {
         public static User Authenticate(int attempts)
         {
-            // Launch LoginView
-            //var LoginView = new LoginView(App.Renderer.VisualResources, App.Renderer.SplitChar);
-            //var result = App.Renderer.Render(LoginView);
+            var LoginView = new LoginView(attempts);
+            var userRequest = App.Renderer.Render(LoginView);
 
-            // extract input name
-            // extract input password
-            // hash password
-            // find User with corresponding name input and password hash
+            var credentials = userRequest.GetUserInputs();
 
-            // if ok : return user
-            // if nok : return UnauthorizedUser
+            string nameRequest = credentials[0];
+            string hashRequest = SHA.GenerateSHA512String(credentials[1]);
 
-            return new TestUser();
+            User user = (User)App.DB[DBTable.User].Entries.Find(entry =>
+            {
+                User u = (User) entry;
+                return u.PasswordHash.Equals(hashRequest) && u.Name.Equals(nameRequest);
+            });
+
+            return user ?? new User();
         }
     }
 }

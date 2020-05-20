@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using CliLayoutRenderTools;
 
 
 // TODO : Surcharge de ToString() ?
 
 
-namespace CliLayoutRenderTools
+namespace ProjetProgAvENSC1A.Renderer
 {
     public class ContentView
     {

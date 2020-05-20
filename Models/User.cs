@@ -7,26 +7,23 @@ namespace ProjetProgAvENSC1A.Models
 {
     public enum Privilege
     {
+        Unauthorized,
         Administrator,
         Moderator,
-        Spectator,
-        Unauthorized
+        Spectator
     }
 
     class User : EntryType
     {
-        public Privilege Privilege { get; protected set; }
-        public string Name { get; protected set; }
-        public string PasswordHash { get; protected set; }
-    }
+        public Privilege Privilege { get; set; }
+        public string Name { get; set; }
+        public string PasswordHash { get; set; }
 
-    class TestUser : User
-    {
-        public TestUser()
+        public User()
         {
-            Privilege = Privilege.Administrator;
-            Name = "Administrateur";
-            PasswordHash = SHA.GenerateSHA512String("admin");
+            Privilege = Privilege.Unauthorized;
+            Name = String.Empty;
+            PasswordHash = String.Empty;
         }
     }
 }
