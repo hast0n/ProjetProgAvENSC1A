@@ -78,7 +78,7 @@ namespace ProjetProgAvENSC1A.Renderer
                 //      -> length attr comes before regex attr
                 //      -> no regex attribute
                 "input",
-                @"<input (?:regex='([^\r\n\t\f\v]+)){1}'(?: length=([0-9]{1,2}))?(?: hidden=(true|false))?>{1}"
+                @"<input (?:regex='([^\r\n\t\f\v\']+)){1}'(?: length=([0-9]{1,2}))?(?: hidden=(true|false))?>{1}"
                 //@"<input (?:regex='([^\r\n\t\f\v]+)){1}'(?: length=([0-9]{1,2}))?>{1}"
             },
             {
@@ -86,7 +86,7 @@ namespace ProjetProgAvENSC1A.Renderer
                 // as long as they do not include \t, \n, \r, \b, <, >
                 // as defined in the 'any' regex
                 "selector",
-                @"<selector (?:value=([0-9]{1,2})){1} (?:text='([^\t\n\r<>]+)'){1}" +
+                @"<selector (?:value=([0-9]{1,2})){1} (?:text='([^\t\n\r<>\']+)'){1}" +
                     "(?: color=([a-zA-Z]+))?(?: (selected))?>"
             }
         }; 
@@ -259,14 +259,12 @@ namespace ProjetProgAvENSC1A.Renderer
         
 
 
-        public ImmutableDictionary<int, Dictionary<string ,string>> Render(ContentView view)
+        public ModifierDictionary Render(ContentView view)
         {
             SetWindowSize();
             ConsoleColorTheme ="black";
 
-            var userInputs = LaunchAndWaitForInput(view);
-
-            return userInputs;
+            return LaunchAndWaitForInput(view);
         }
 
         public List<string> GetViewContent(ContentView view)
@@ -458,38 +456,36 @@ namespace ProjetProgAvENSC1A.Renderer
         }
 
 
-
-        private ImmutableDictionary<int, Dictionary<string, string>> LaunchAndWaitForInput(ContentView view)
+        
+        private ModifierDictionary LaunchAndWaitForInput(ContentView view)
         {
             StringBuilder pageString = DumpScreen(view, out var modifierDictionary);
-            
-            var res = new Dictionary<int, Dictionary<string, string>>()
-                {{ 0, new Dictionary<string, string>() {{ Constants.TYPE, null }} }}
-                .ToImmutableDictionary();
+
+            var res = new ModifierDictionary()
+            {
+                {
+                    0, new Dictionary<string, string>()
+                    {
+                        {Constants.TYPE, null}
+                    }
+                }
+            };
             
             if (modifierDictionary.ContainsField(Constants.INPUT))
             {
-                int inputIndex = modifierDictionary.GetInputFieldIndex();
-                
-                HandleInput(modifierDictionary, inputIndex, pageString);
+                HandleInput(modifierDictionary, pageString);
 
-                var kvpEnumerable = modifierDictionary.Where(kvp =>
-                    kvp.Value[Constants.TYPE].Equals(Constants.INPUT));
-                
                 modifierDictionary.TrimInputFields();
 
-                res = kvpEnumerable.ToImmutableDictionary();
+                res = modifierDictionary;
             }
             else if (modifierDictionary.ContainsField(Constants.SELECTOR))
             {
                 modifierDictionary.RemoveSelectedDuplicate();
 
                 HandleSelector(modifierDictionary, pageString);
-
-                var kvpEnumerable = modifierDictionary.Where(kvp =>
-                    kvp.Value[Constants.TYPE].Equals(Constants.SELECTOR));
-
-                res = kvpEnumerable.ToImmutableDictionary();
+                
+                res = modifierDictionary;
             }
             else
             {
@@ -502,9 +498,7 @@ namespace ProjetProgAvENSC1A.Renderer
             return res;
         }
 
-        private void HandleSelector(
-            Dictionary<int, Dictionary<string, string>> modifierDictionary, 
-            StringBuilder pageString)
+        private void HandleSelector(ModifierDictionary modifierDictionary, StringBuilder pageString)
         {
             RenderScreen(pageString, modifierDictionary);
 
@@ -540,77 +534,89 @@ namespace ProjetProgAvENSC1A.Renderer
             }
         }
 
-        private void HandleInput(
-            Dictionary<int, Dictionary<string, string>> modifierDictionary,
-            int inputIndex, StringBuilder pageString)
+        private void HandleInput(ModifierDictionary modifierDictionary, StringBuilder pageString)
         {
             RenderScreen(pageString, modifierDictionary);
 
-            while (modifierDictionary.Count > 0)
+            int firstFieldIndex = modifierDictionary.GetNextInputFieldIndex(0);
+            int currentIndex = firstFieldIndex;
+
+            bool trim = false;
+            bool editing = true;
+
+            while (editing)
             {
-                // Prevent triggering for b, r ,n in \b, \r or \n
-                string currentRegexPattern = $"^{modifierDictionary[inputIndex][Constants.REGEX]}$";
-                bool isHiddenInput = modifierDictionary[inputIndex][Constants.HIDDEN] == bool.TrueString;
                 string input = Input;
-                
-                while (!Regex.IsMatch(input, currentRegexPattern))
-                {
-                    Console.Write(Constants.BACKSPACE);
 
-                    if (input.Equals(Constants.BACKSPACE) && modifierDictionary.HasSetModifiers())
-                    {
-                        modifierDictionary.WipeLastInput();
+                // Prevent triggering for b, r ,n in \b, \r or \n
+                string currentRegexPattern = $"^{modifierDictionary[currentIndex][Constants.REGEX]}$";
+
+                string currentValue = trim
+                    ? modifierDictionary[currentIndex][Constants.VALUE].TrimEnd()
+                    : modifierDictionary[currentIndex][Constants.VALUE];
+
+                trim = false;
+
+                switch (input)
+                {
+                    case Constants.BACKSPACE:
+
+                        if (currentValue.Equals(String.Empty))
+                        {
+                            if (currentIndex == firstFieldIndex) continue;
+                            
+                            int tmp = modifierDictionary.GetPreviousInputFieldIndex(currentIndex);
+                            currentIndex = tmp != 0 ? tmp : currentIndex;
+
+                            trim = true;
+                        }
+
+                        currentValue = trim
+                            ? modifierDictionary[currentIndex][Constants.VALUE].TrimEnd()
+                            : modifierDictionary[currentIndex][Constants.VALUE];
+
+                        if (currentValue.Length > 0) 
+                            modifierDictionary[currentIndex][Constants.VALUE] = currentValue[..^1];
+                        
                         break;
-                    }
 
-                    if (input.Equals(Constants.CARRIAGE_RETURN))
-                    {
-                        int index = modifierDictionary.GetFirstUnsetInput();
+                    case Constants.CARRIAGE_RETURN:
+                        int length = int.Parse(modifierDictionary[currentIndex][Constants.LENGTH]);
 
-                        if (index != 0) 
-                        {
-                            string v = modifierDictionary[index][Constants.VALUE];
-                            int l = int.Parse(modifierDictionary[index][Constants.LENGTH]);
+                        modifierDictionary[currentIndex][Constants.VALUE] = currentValue.PadRight(length);
 
-                            modifierDictionary[index][Constants.VALUE] = v.PadRight(l);
-                        }
-
-                        if (modifierDictionary.IsReadyForReturn())
-                        {
-                            return;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-
-                    input = Input;
+                        currentIndex = modifierDictionary.GetNextInputFieldIndex(currentIndex);
+                        break;
                 }
 
-                if (!inputBreakers.Contains(input))
+                if (Regex.IsMatch(input, currentRegexPattern))
                 {
-                    int length = int.Parse(modifierDictionary[inputIndex][Constants.LENGTH]);
-                    string userInput = modifierDictionary[inputIndex][Constants.VALUE];
-                    string res = $"{userInput}{input}";
+                    int length = int.Parse(modifierDictionary[currentIndex][Constants.LENGTH]);
 
-                    modifierDictionary[inputIndex][Constants.VALUE] = res[..(res.Length > length ? ^1 : ^0)];
+                    string res = $"{currentValue}{input}";
+
+                    string newValue = res[..(res.Length > length ? ^1 : ^0)];
+
+                    modifierDictionary[currentIndex][Constants.VALUE] = newValue;
+
+                    if (newValue.Length.Equals(length))
+                    {
+                        int nextFieldIndex = modifierDictionary.GetNextInputFieldIndex(currentIndex);
+                        currentIndex = nextFieldIndex != 0 ? nextFieldIndex : currentIndex;
+                    }
                 }
-
+                
                 RenderScreen(pageString, modifierDictionary);
-
-                inputIndex = modifierDictionary.GetInputFieldIndex();
             }
         }
 
 
 
-        private StringBuilder DumpScreen(ContentView view,
-            out Dictionary<int, Dictionary<string, string>> modifierDictionary)
+        private StringBuilder DumpScreen(ContentView view, out ModifierDictionary modifierDictionary)
         {
             // Read screen to extract modifier indexes
 
-            modifierDictionary = new Dictionary<int, Dictionary<string, string>>();
+            modifierDictionary = new ModifierDictionary();
 
             StringBuilder output = new StringBuilder();
 
@@ -751,8 +757,7 @@ namespace ProjetProgAvENSC1A.Renderer
         /// </summary>
         /// <param name="screenBuilder"></param>
         /// <param name="modifierDictionary"></param>
-        private void RenderScreen(StringBuilder screenBuilder,
-            Dictionary<int, Dictionary<string, string>> modifierDictionary)
+        private void RenderScreen(StringBuilder screenBuilder, ModifierDictionary modifierDictionary)
         {
 
             Console.Clear();

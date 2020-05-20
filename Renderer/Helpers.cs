@@ -32,82 +32,78 @@ namespace CliLayoutRenderTools
         {
             return value % 2 != 0;
         }
+    }
 
 
-        /// <summary>
-        /// Return a bool indicating if user has already input data.
-        /// </summary>
-        /// <param name="dict"></param>
-        /// <returns></returns>
-        public static bool HasSetModifiers(this Dictionary<int, Dictionary<string, string>> dict)
+    public class ModifierDictionary : Dictionary<int, Dictionary<string, string>>
+    {
+        // Inputs
+        public int GetPreviousInputFieldIndex(int index)
         {
-            return dict
-                .Where(x => x.Value[Constants.TYPE].Equals(Constants.INPUT))
-                .Any(x => !string.IsNullOrEmpty(x.Value[Constants.VALUE]));
+            return this.LastOrDefault(kvp =>
+                kvp.Value[Constants.TYPE].Equals(Constants.INPUT)
+                && kvp.Key < index).Key;
         }
 
-        /// <summary>
-        /// Returns index of first unset input modifier.
-        /// </summary>
-        /// <param name="dict"></param>
-        /// <returns></returns>
-        public static int GetFirstUnsetInput(this Dictionary<int, Dictionary<string, string>> dict)
+        public int GetNextInputFieldIndex(int index)
         {
-            return dict
-                .Where(kvp => kvp.Value[Constants.TYPE].Equals(Constants.INPUT))
-                .OrderBy(kvp => kvp.Key)
-                .FirstOrDefault(kvp =>
-                    kvp.Value[Constants.VALUE].Length != int.Parse(kvp.Value[Constants.LENGTH]))
-                .Key;
+            return this.FirstOrDefault(kvp =>
+                kvp.Value[Constants.TYPE].Equals(Constants.INPUT)
+                && kvp.Key > index).Key;
         }
 
-        /// <summary>
-        /// Returns index of Last set input modifier.
-        /// </summary>
-        /// <param name="dict"></param>
-        /// <returns></returns>
-        public static int GetLastSetInput(this Dictionary<int, Dictionary<string, string>> dict)
+        public void TrimInputFields()
         {
-            return dict
-                .Where(kvp => kvp.Value[Constants.TYPE]
-                    .Equals(Constants.INPUT))
-                .OrderBy(kvp => kvp.Key)
-                .LastOrDefault(kvp =>
-                    kvp.Value[Constants.VALUE].Length
-                        .Equals(int.Parse(kvp.Value[Constants.LENGTH])))
-                .Key;
+            foreach (var keyValuePair in this.Where(kvp =>
+                kvp.Value[Constants.TYPE].Equals(Constants.INPUT)))
+            {
+                string value = keyValuePair.Value[Constants.VALUE];
+                keyValuePair.Value[Constants.VALUE] = value.TrimEnd();
+            }
         }
 
-
-
-        public static int GetSelectedIndex(this Dictionary<int, Dictionary<string, string>> dict)
+        public List<string> GetUserInputs()
         {
-            return dict.FirstOrDefault(kvp =>
+            List<string> inputs = new List<string>();
+
+            foreach (var keyValuePair in this.Where(kvp =>
+                kvp.Value[Constants.TYPE].Equals(Constants.INPUT)))
+            {
+                inputs.Add(keyValuePair.Value[Constants.VALUE]);
+            }
+
+            return inputs;
+        }
+        
+        // Selectors
+        public int GetSelectedIndex()
+        {
+            return this.FirstOrDefault(kvp =>
                 kvp.Value[Constants.TYPE].Equals(Constants.SELECTOR) &&
                 kvp.Value[Constants.SELECTED].Equals(bool.TrueString)).Key;
         }
 
-        public static int GetPreviousSelectorIndex(this Dictionary<int, Dictionary<string, string>> dict, int index)
+        public int GetPreviousSelectorIndex(int index)
         {
-            return dict.Where(kvp => 
+            return this.Where(kvp => 
                     kvp.Value[Constants.TYPE].Equals(Constants.SELECTOR))
                 .TakeWhile(kvp =>
                     kvp.Key < index)
                 .LastOrDefault().Key;
         }
 
-        public static int GetNextSelectorIndex(this Dictionary<int, Dictionary<string, string>> dict, int index)
+        public int GetNextSelectorIndex(int index)
         {
-            return dict.Where(kvp =>
+            return this.Where(kvp =>
                     kvp.Value[Constants.TYPE].Equals(Constants.SELECTOR))
                 .SkipWhile(kvp =>
                     kvp.Key <= index)
                 .FirstOrDefault().Key;
         }
 
-        public static void RemoveSelectedDuplicate(this Dictionary<int, Dictionary<string, string>> dict)
+        public void RemoveSelectedDuplicate()
         {
-            int index = GetSelectedIndex(dict);
+            int index = this.GetSelectedIndex();
 
             
             // Here we assume 0 is the default null value
@@ -115,19 +111,19 @@ namespace CliLayoutRenderTools
 
             // TODO: Change null value for modifierDictionary
 
-            // We also assume that dict contains a selector field as 
-            // dict has passed through ContainsField() before entering this scope
+            // We also assume that this contains a selector field as 
+            // this has passed through ContainsField() before entering this scope
 
             // Here we set the first selector field to selected
             if (index == 0)
             {
-                dict.First(kvp => kvp.Value[Constants.TYPE].Equals(Constants.SELECTOR))
+                this.First(kvp => kvp.Value[Constants.TYPE].Equals(Constants.SELECTOR))
                     .Value[Constants.SELECTED] = bool.TrueString;
 
-                index = GetSelectedIndex(dict);
+                index = this.GetSelectedIndex();
             }
 
-            foreach (var kvp in dict.Where(kvp => 
+            foreach (var kvp in this.Where(kvp => 
                 kvp.Value[Constants.TYPE].Equals(Constants.SELECTOR)
                 && kvp.Value[Constants.SELECTED].Equals(bool.TrueString)
                 && !kvp.Key.Equals(index)))
@@ -135,56 +131,11 @@ namespace CliLayoutRenderTools
                 kvp.Value[Constants.SELECTED] = bool.FalseString;
         }
 
-
-        public static void WipeLastInput(this Dictionary<int, Dictionary<string, string>> dict)
-        {
-            // Remove last user input
-            try
-            {
-                int index = dict.GetInputFieldIndex();
-
-                // Switch to previous input field if current one is empty
-                if (dict[index][Constants.VALUE].TrimEnd().Length == 0)
-                {
-                    index = dict.GetLastSetInput();
-                }
-
-                string value = dict[index][Constants.VALUE];
-                int totalLength = int.Parse(dict[index][Constants.LENGTH]);
-
-                if (value.Length.Equals(totalLength)) value = value.TrimEnd();
-                
-                if (value.Length > 0) dict[index][Constants.VALUE] = value[..^1];
-            }
-            catch (KeyNotFoundException) { /* DO NOTHING */ }
-        }
-
-        public static int GetInputFieldIndex(this Dictionary<int, Dictionary<string, string>> dict)
-        {
-            var m = dict.GetFirstUnsetInput();
-            return m == 0 ? dict.GetLastSetInput() : m;
-        }
-        
-        public static bool ContainsField(this Dictionary<int, Dictionary<string, string>> dict, string fieldType)
-        {
-            return dict.Any(kvp => kvp.Value[Constants.TYPE].Equals(fieldType));
-        }
-
-
-        public static bool IsReadyForReturn(this Dictionary<int, Dictionary<string, string>> dict)
-        {
-            return dict.Where(kvp =>
-                kvp.Value[Constants.TYPE].Equals(Constants.INPUT))
-                .All(kvp =>
-                    kvp.Value[Constants.VALUE].Length
-                    .Equals(int.Parse(kvp.Value[Constants.LENGTH])));
-        }
-
-        public static string GetSelectedValue(this ImmutableDictionary<int, Dictionary<string, string>> input)
+        public string GetSelectedValue()
         {
             try
             {
-                return input.FirstOrDefault(kvp =>
+                return this.FirstOrDefault(kvp =>
                     kvp.Value[Constants.SELECTED] == bool.TrueString)
                     .Value[Constants.INDEX];
             }
@@ -194,27 +145,10 @@ namespace CliLayoutRenderTools
             }
         }
 
-        public static List<string> GetUserInputs(this ImmutableDictionary<int, Dictionary<string, string>> dict)
+        // Any
+        public bool ContainsField(string fieldType)
         {
-            List<string> inputs = new List<string>();
-
-            foreach (var keyValuePair in dict.Where(kvp =>
-                kvp.Value[Constants.TYPE].Equals(Constants.INPUT)))
-            {
-                inputs.Add(keyValuePair.Value[Constants.VALUE]);
-            }
-
-            return inputs;
-        }
-
-        public static void TrimInputFields(this Dictionary<int, Dictionary<string, string>> dict)
-        {
-            foreach (var keyValuePair in dict.Where(kvp =>
-                kvp.Value[Constants.TYPE].Equals(Constants.INPUT)))
-            {
-                string value = keyValuePair.Value[Constants.VALUE];
-                keyValuePair.Value[Constants.VALUE] = value.TrimEnd();
-            }
+            return this.Any(kvp => kvp.Value[Constants.TYPE].Equals(fieldType));
         }
     }
 }

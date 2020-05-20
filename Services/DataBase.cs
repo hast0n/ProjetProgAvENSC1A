@@ -21,6 +21,7 @@ namespace ProjetProgAvENSC1A.Services
     class DataBase
     {
         private Dictionary<DBTable, IDataTable> _data;
+
         public IDataTable this[DBTable tableIndex] => _data[tableIndex];
 
         public DataBase()

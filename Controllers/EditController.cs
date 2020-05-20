@@ -1,6 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CliLayoutRenderTools;
+using ProjetProgAvENSC1A.Models;
+using ProjetProgAvENSC1A.Services;
+using System;
+using ProjetProgAvENSC1A.Views;
 
 namespace ProjetProgAvENSC1A.Controllers
 {
@@ -8,7 +10,23 @@ namespace ProjetProgAvENSC1A.Controllers
     {
         public static void AddNewProject()
         {
-            throw new NotImplementedException();
+            var newProjectPage = new NewProjectView();
+            var userRequest = App.Renderer.Render(newProjectPage);
+
+
+
+            //var credentials = userRequest.GetUserInputs();
+
+            //string nameRequest = credentials[0];
+            //string hashRequest = SHA.GenerateSHA512String(credentials[1]);
+
+            //User user = (User)App.DB[DBTable.User].Entries.Find(entry =>
+            //{
+            //    User u = (User)entry;
+            //    return u.PasswordHash.Equals(hashRequest) && u.Name.Equals(nameRequest);
+            //});
+
+            //return user ?? new User();
         }
 
         public static void RemoveProject()

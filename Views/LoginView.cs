@@ -55,8 +55,8 @@ namespace ProjetProgAvENSC1A.Views
                 },
                 {
                     "pswInput",
-                    String.Join(App.Renderer.SplitChar, ""+
-                                                        "                   ┌──────────────────────┐",
+                    String.Join(App.Renderer.SplitChar, ""+ 
+                        "                   ┌──────────────────────┐",
                         "Enter Password :   │ <input regex='[\\w0-9 ]' length=20 hidden=true> │",
                         "                   └──────────────────────┘")
                 },

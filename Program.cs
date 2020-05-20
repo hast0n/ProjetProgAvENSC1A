@@ -9,8 +9,9 @@ namespace ProjetProgAvENSC1A
         public static void Main()
         {
             var app = new App();
+
             //app.GenerateSampleData(true);
-            //app.Debug();
+            
             app.Launch();
         }
     }

@@ -224,11 +224,6 @@ namespace ProjetProgAvENSC1A
             if (writeToStorage) DB.Persist();
         }
 
-        public void Debug()
-        {
-            Console.WriteLine(Guid.NewGuid());
-        }
-
         public void Launch()
         {
             int attempts = 0;
