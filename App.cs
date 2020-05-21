@@ -20,8 +20,6 @@ namespace ProjetProgAvENSC1A
         {
             DB.Load();
 
-            //GenerateSampleData(true);
-
             Renderer.SetDefaultResources();
             Renderer.AddVisualResources(new Dictionary<string, string>()
             {

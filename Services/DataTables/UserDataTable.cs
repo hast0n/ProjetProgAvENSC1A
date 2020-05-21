@@ -8,6 +8,8 @@ using ProjetProgAvENSC1A.Models;
 
 namespace ProjetProgAvENSC1A.Services.DataTables
 {
+    // The user.json file should be encryted before saving to disk
+
     class UserDataTable : IDataTable
     {
         private string filePath = Constants.USER_FILEPATH;
