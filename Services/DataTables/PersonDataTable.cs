@@ -83,7 +83,7 @@ namespace ProjetProgAvENSC1A.Services.DataTables
         {
             try
             {
-                await using FileStream fs = File.Open(FilePath, FileMode.Truncate, FileAccess.Write);
+                await using FileStream fs = File.Open(FilePath, FileMode.Create, FileAccess.Write);
 
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 options.Converters.Add(new PersonConverter());
@@ -108,6 +108,7 @@ namespace ProjetProgAvENSC1A.Services.DataTables
 
             return true;
         }
+
         ///<summary>  This property returns Person of the chosen subclass 
         ///</summary>
         public List<Person> GetPersonsOfType<T>() => _entries

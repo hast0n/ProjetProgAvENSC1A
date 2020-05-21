@@ -84,7 +84,7 @@ namespace ProjetProgAvENSC1A.Views
                     String.Join(App.Renderer.SplitChar, ""+ 
                         "Give an interesting title to the new project:",
                         $"┌{new string('─', 60 + 2)}┐",
-                        "│ <input regex='[\\w0-9 ]' length=60> │",
+                        "│ <input regex=`[\\w0-9 ]` length=60> │",
                         $"└{new string('─', 60 + 2)}┘")
                 },
                 {
@@ -93,9 +93,9 @@ namespace ProjetProgAvENSC1A.Views
                         " YYYY   MM   DD ",
                         "┌────┐ ┌──┐ ┌──┐",
 
-                        "│<input regex='[0-9]' length=4>│/" +
-                        "│<input regex='[0-9]' length=2>│/" +
-                        "│<input regex='[0-9]' length=2>│",
+                        "│<input regex=`[0-9]` length=4>│/" +
+                        "│<input regex=`[0-9]` length=2>│/" +
+                        "│<input regex=`[0-9]` length=2>│",
 
                         "└────┘ └──┘ └──┘")
                 },

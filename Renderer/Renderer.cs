@@ -78,7 +78,7 @@ namespace ProjetProgAvENSC1A.Renderer
                 //      -> length attr comes before regex attr
                 //      -> no regex attribute
                 "input",
-                @"<input (?:regex='([^\r\n\t\f\v\']+)){1}'(?: length=([0-9]{1,2}))?(?: hidden=(true|false))?>{1}"
+                @"<input (?:regex=`([^\r\n\t\f\v\`]+)){1}`(?: length=([0-9]{1,2}))?(?: hidden=(true|false))?>{1}"
                 //@"<input (?:regex='([^\r\n\t\f\v]+)){1}'(?: length=([0-9]{1,2}))?>{1}"
             },
             {
@@ -86,7 +86,7 @@ namespace ProjetProgAvENSC1A.Renderer
                 // as long as they do not include \t, \n, \r, \b, <, >
                 // as defined in the 'any' regex
                 "selector",
-                @"<selector (?:value=([0-9]{1,2})){1} (?:text='([^\t\n\r<>\']+)'){1}" +
+                @"<selector (?:value=([0-9]{1,2})){1} (?:text=`([^\t\n\r<>\`]+)`){1}" +
                     "(?: color=([a-zA-Z]+))?(?: (selected))?>"
             }
         }; 

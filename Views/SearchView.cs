@@ -35,7 +35,7 @@ namespace ProjetProgAvENSC1A.Views
                     "keyInput",
                     String.Join(App.Renderer.SplitChar, ""+
                         "                   ┌──────────────────────┐",
-                        "Enter Keyword :    │ <input regex='[\\w0-9 ]' length=20> │",
+                        "Enter Keyword :    │ <input regex=`[\\w0-9 ]` length=20> │",
                         "                   └──────────────────────┘")
                 },
             };
