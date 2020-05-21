@@ -10,8 +10,10 @@ namespace ProjetProgAvENSC1A.Views.NewProjectViews
     class NewProjectAdvancedInfoView : ContentView
     {
         private Project currentProject;
+        private string redCol = "<color value=red>";
+        private string blackCol = "<color value=black>";
 
-        public NewProjectAdvancedInfoView(Project p)
+        public NewProjectAdvancedInfoView(Project p, int errorType)
         {
             currentProject = p;
 
@@ -31,8 +33,10 @@ namespace ProjetProgAvENSC1A.Views.NewProjectViews
                 "[contribTitle]",
                 "[contribList]",
                 "[emptyLine]",
-                "[contribAddHint]",
-
+                "[studentAddHint]",
+                "[teacherAddHint]",
+                "[externAddHint]",
+                
                 "2*[emptyLine]",
                 
                 // Deliverables
@@ -57,6 +61,13 @@ namespace ProjetProgAvENSC1A.Views.NewProjectViews
                 "[emptyLine]",
                 "[courseAddHint]",
 
+                errorType switch
+                {
+                    1 => "[noPromError]",
+                    2 => "[noTeacherError]",
+                    _ => "[emptyLine]"
+                },
+
                 "3*[emptyLine]",
                 "[saveBtn]",
                 "1*[emptyLine]",
@@ -79,14 +90,19 @@ namespace ProjetProgAvENSC1A.Views.NewProjectViews
                 
                 {"contribTitle", "-- Contributors --"},
                 {"contribList", BuildContributorsList()},
-                {"contribAddHint", "<selector value=3 text=' Add a contributor '>"},
+                {"studentAddHint", "<selector value=3 text=' Add a student '>"},
+                {"teacherAddHint", "<selector value=4 text=' Add a teacher '>"},
+                {"externAddHint", "<selector value=5 text=' Add an extern '>"},
+
+                {"noPromError", $"{redCol} Please, select a promotion first {blackCol}"},
+                {"noTeacherError", $"{redCol} Please, select a teacher first {blackCol}"},
 
                 {
                     "saveBtn",
                     String.Join(App.Renderer.SplitChar, "" +
                         "┌─────────────────────┐",
-                        "│ <selector value=4 text=' Cancel and delete ' color=red> │",
-                        "│ <selector value=5 text='       Save        ' color=blue> │",
+                        "│ <selector value=6 text=' Cancel and delete ' color=red> │",
+                        "│ <selector value=7 text='       Save        ' color=blue> │",
                         "└─────────────────────┘")
                 }
             };
@@ -131,13 +147,11 @@ namespace ProjetProgAvENSC1A.Views.NewProjectViews
             }
             else
             {
-                int maxLength = currentProject.Promotions.Max(p =>
-                    $"{p.Name} {p.Grade.GradeName} {p.GraduationYear}".Length);
+                int maxLength = currentProject.Promotions.Max(p => p.ToString().Length);
 
                 foreach (var p in currentProject.Promotions)
                 {
-                    string tmp = $"{p.Name} {p.Grade.GradeName} {p.GraduationYear}".PadRight(maxLength);
-                    sb.AppendFormat(" - {0}{1}", tmp, App.Renderer.SplitChar);
+                    sb.AppendFormat(" - {0}{1}", p.ToString().PadRight(maxLength), App.Renderer.SplitChar);
                 }
             }
 

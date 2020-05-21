@@ -13,7 +13,6 @@ namespace ProjetProgAvENSC1A.Controllers
     {
         public static User Authenticate(int attempts)
         {
-            /*
             var LoginView = new LoginView(attempts);
             var userRequest = App.Renderer.Render(LoginView);
 
@@ -29,13 +28,6 @@ namespace ProjetProgAvENSC1A.Controllers
             });
 
             return user ?? new User();
-            */
-
-            return new User()
-            {
-                Name = "TestUser",
-                Privilege = Privilege.Administrator
-            };
         }
     }
 }

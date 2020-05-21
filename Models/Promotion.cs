@@ -43,5 +43,10 @@ namespace ProjetProgAvENSC1A.Models
                 else { return false; }
             }
         }
+
+        public override string ToString()
+        {
+            return $"{Name} {Grade.GradeName} {GraduationYear}";
+        }
     }
 }

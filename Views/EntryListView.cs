@@ -43,7 +43,7 @@ namespace ProjetProgAvENSC1A.Views
                 },
                 {
                     "entryHint",
-                    $"Select one of the following {entryType}s to display projects:"
+                    $"Select one of the following {entryType}s:"
                 }
             };
         }
@@ -51,13 +51,18 @@ namespace ProjetProgAvENSC1A.Views
         public string GetFormattedData(Dictionary<string, string> entries)
         {
             StringBuilder sb = new StringBuilder();
-            int maxLength = entries.Values.Max(e => e.Length);
 
-            foreach (var kvp in entries)
+            if (entries.Count > 0)
             {
-                sb.AppendFormat("<selector value={0} text=' {1} '>{2}",
-                    kvp.Key, kvp.Value.PadRight(maxLength), App.Renderer.SplitChar);
+                int maxLength = entries.Values.Max(e => e.Length);
+
+                foreach (var kvp in entries)
+                {
+                    sb.AppendFormat("<selector value={0} text=' {1} '>{2}",
+                        kvp.Key, kvp.Value.PadRight(maxLength), App.Renderer.SplitChar);
+                }
             }
+
 
             return sb.ToString();
         }

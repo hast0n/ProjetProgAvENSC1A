@@ -7,13 +7,13 @@ namespace ProjetProgAvENSC1A.Models
 {
     public enum Role
     {
-        ChefDeProj,
-        Tuteur,
+        ProjetManager,
+        Tutor,
         Client,
-        Developp,
-        RespoFH,
-        RespoQuali,
-        Secretaire,
+        Developer,
+        HFManager,
+        QualityManager,
+        Secretary,
         TimeKeeper
     }
 
@@ -52,5 +52,17 @@ namespace ProjetProgAvENSC1A.Models
         
         [JsonPropertyName("Contributors")] 
         public Dictionary<string, string> JsonPersUUID { get; set; }
+
+        public Project()
+        {
+            Topic = "";
+            StartDate = DateTime.MinValue;
+            EndDate = DateTime.MaxValue;
+            Deliverables = new List<Deliverable>();
+            Promotions = new List<Promotion>();
+            Courses = new List<Course>();
+            Contributors = new Dictionary<Role, Person>();
+        }
+
     }
 }
