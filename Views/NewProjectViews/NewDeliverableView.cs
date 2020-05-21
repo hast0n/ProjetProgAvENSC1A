@@ -34,9 +34,9 @@ namespace ProjetProgAvENSC1A.Views.NewProjectViews
                     "infoInput",
                     String.Join(App.Renderer.SplitChar, ""+
                         "Give an interesting description to the deliverable:",
-                        $"┌{new string('─', 60 + 2)}┐",
-                        "│ <input regex='[\\w0-9 ]' length=90> │",
-                        $"└{new string('─', 60 + 2)}┘")
+                        $"┌{new string('─', 90 + 2)}┐",
+                        "│ <input regex=`[\\w0-9 ]` length=90> │",
+                        $"└{new string('─', 90 + 2)}┘")
                 },
             };
         }

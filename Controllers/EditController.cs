@@ -32,6 +32,7 @@ namespace ProjetProgAvENSC1A.Controllers
                 {
                     case "0": // add deliverable
                         var deliv = AskDeliverable();
+                        newProject.Deliverables.Add(deliv);
                         break;
 
                     case "1": // add promotion
@@ -59,9 +60,14 @@ namespace ProjetProgAvENSC1A.Controllers
                         contrib = AskContributor(newProject, "student");
                         role = AskContribRole(contrib);
 
-                        if (!newProject.Contributors.Values.Contains(contrib))
+                        if (!newProject.Contributors.Values.Contains(contrib)
+                            && !newProject.Contributors.Keys.Contains(role))
                             newProject.Contributors.Add(role, contrib);
-
+                        else
+                        {
+                            errorType = 3;
+                        }
+                        
                         break;
 
                     case "4": // add teacher
@@ -69,8 +75,13 @@ namespace ProjetProgAvENSC1A.Controllers
                         contrib = AskContributor(newProject, "teacher");
                         role = AskContribRole(contrib);
 
-                        if (!newProject.Contributors.Values.Contains(contrib))
+                        if (!newProject.Contributors.Values.Contains(contrib)
+                            && !newProject.Contributors.Keys.Contains(role))
                             newProject.Contributors.Add(role, contrib);
+                        else
+                        {
+                            errorType = 3;
+                        }
 
                         break;
 
@@ -79,8 +90,13 @@ namespace ProjetProgAvENSC1A.Controllers
                         contrib = AskContributor(newProject, "extern");
                         role = AskContribRole(contrib);
 
-                        if (!newProject.Contributors.Values.Contains(contrib))
+                        if (!newProject.Contributors.Values.Contains(contrib)
+                            && !newProject.Contributors.Keys.Contains(role))
                             newProject.Contributors.Add(role, contrib);
+                        else
+                        {
+                            errorType = 3;
+                        }
 
                         break;
 
@@ -94,6 +110,7 @@ namespace ProjetProgAvENSC1A.Controllers
             }
 
             App.DB[DBTable.Project].AddEntry(newProject);
+            App.DB.Persist();
         }
 
         public static void RemoveProject()

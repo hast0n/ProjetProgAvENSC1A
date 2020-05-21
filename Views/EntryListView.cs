@@ -58,7 +58,7 @@ namespace ProjetProgAvENSC1A.Views
 
                 foreach (var kvp in entries)
                 {
-                    sb.AppendFormat("<selector value={0} text=' {1} '>{2}",
+                    sb.AppendFormat("<selector value={0} text=` {1} `>{2}",
                         kvp.Key, kvp.Value.PadRight(maxLength), App.Renderer.SplitChar);
                 }
             }

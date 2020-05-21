@@ -50,14 +50,14 @@ namespace ProjetProgAvENSC1A.Views
                     "userInput",
                     String.Join(App.Renderer.SplitChar, ""+
                         "                   ┌──────────────────────┐",
-                        "Enter Username :   │ <input regex='[\\w0-9 ]' length=20> │",
+                        "Enter Username :   │ <input regex=`[\\w0-9 ]` length=20> │",
                         "                   └──────────────────────┘")
                 },
                 {
                     "pswInput",
                     String.Join(App.Renderer.SplitChar, ""+ 
                         "                   ┌──────────────────────┐",
-                        "Enter Password :   │ <input regex='[\\w0-9 ]' length=20 hidden=true> │",
+                        "Enter Password :   │ <input regex=`[\\w0-9 ]` length=20 hidden=true> │",
                         "                   └──────────────────────┘")
                 },
                 {

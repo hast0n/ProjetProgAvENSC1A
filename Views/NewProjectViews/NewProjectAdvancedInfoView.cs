@@ -65,6 +65,7 @@ namespace ProjetProgAvENSC1A.Views.NewProjectViews
                 {
                     1 => "[noPromError]",
                     2 => "[noTeacherError]",
+                    3 => "[roleDuplicateError]",
                     _ => "[emptyLine]"
                 },
 
@@ -78,31 +79,32 @@ namespace ProjetProgAvENSC1A.Views.NewProjectViews
             {
                 {"delivTitle", "-- Deliverables --"},
                 {"delivList", BuildDeliverableList()},
-                {"delivAddHint", "<selector value=0 text=' Add a deliverable '>"},
+                {"delivAddHint", "<selector value=0 text=` Add a deliverable `>"},
 
                 {"promTitle", "-- Promotions --"},
                 {"promList", BuildPromotionList()},
-                {"promAddHint", "<selector value=1 text=' Add a promotion '>"},
+                {"promAddHint", "<selector value=1 text=` Add a promotion `>"},
                 
                 {"courseTitle", "-- Courses --"},
                 {"courseList", BuildCourseList()},
-                {"courseAddHint", "<selector value=2 text=' Add a course '>"},
+                {"courseAddHint", "<selector value=2 text=` Add a course `>"},
                 
                 {"contribTitle", "-- Contributors --"},
                 {"contribList", BuildContributorsList()},
-                {"studentAddHint", "<selector value=3 text=' Add a student '>"},
-                {"teacherAddHint", "<selector value=4 text=' Add a teacher '>"},
-                {"externAddHint", "<selector value=5 text=' Add an extern '>"},
+                {"studentAddHint", "<selector value=3 text=` Add a student `>"},
+                {"teacherAddHint", "<selector value=4 text=` Add a teacher `>"},
+                {"externAddHint", "<selector value=5 text=` Add an extern `>"},
 
                 {"noPromError", $"{redCol} Please, select a promotion first {blackCol}"},
                 {"noTeacherError", $"{redCol} Please, select a teacher first {blackCol}"},
-
+                {"roleDuplicateError", $"{redCol} You cannot add two contributors with the same role {blackCol}"}, // Sorry about that :)
+                
                 {
                     "saveBtn",
                     String.Join(App.Renderer.SplitChar, "" +
                         "┌─────────────────────┐",
-                        "│ <selector value=6 text=' Cancel and delete ' color=red> │",
-                        "│ <selector value=7 text='       Save        ' color=blue> │",
+                        "│ <selector value=6 text=` Cancel and delete ` color=red> │",
+                        "│ <selector value=7 text=`       Save        ` color=blue> │",
                         "└─────────────────────┘")
                 }
             };

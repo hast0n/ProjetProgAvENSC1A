@@ -94,7 +94,7 @@ namespace ProjetProgAvENSC1A.Services.DataTables
                     entry.JsonStudUUID = entry.Students.ConvertAll(pers => pers.UUID);
                 });
 
-                await using FileStream fs = File.Open(filePath, FileMode.Truncate, FileAccess.Write);
+                await using FileStream fs = File.Open(filePath, FileMode.Create, FileAccess.Write);
 
                 var options = new JsonSerializerOptions { WriteIndented = true };
 

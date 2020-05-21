@@ -39,9 +39,9 @@ namespace ProjetProgAvENSC1A.Views
                 {
                     "entryList",
                     String.Join(App.Renderer.SplitChar, "",
-                    "<selector value=0 text=' - All Projects '> ",
-                    "<selector value=1 text=' - Currents Projects '>",
-                    student ? "<selector value=2 text=' - Promotion's Currents Projects '>":"")
+                    "<selector value=0 text=` - All Projects `> ",
+                    "<selector value=1 text=` - Currents Projects `>",
+                    student ? "<selector value=2 text=` - Promotion's Currents Projects `>":"")
                 },
                 {
                     "personHint",
