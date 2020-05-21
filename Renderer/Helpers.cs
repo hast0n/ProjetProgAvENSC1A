@@ -140,7 +140,7 @@ namespace CliLayoutRenderTools
                     && kvp.Value[Constants.SELECTED] == bool.TrueString)
                     .Value[Constants.INDEX];
             }
-            catch (KeyNotFoundException) // TODO: set correct expression to catch
+            catch (Exception) // catch KeyNotFoundException, NullReferenceException
             {
                 return null;
             }

@@ -1,12 +1,9 @@
-﻿using CliLayoutRenderTools;
+﻿using ProjetProgAvENSC1A.Controllers;
 using ProjetProgAvENSC1A.Models;
 using ProjetProgAvENSC1A.Services;
+using ProjetProgAvENSC1A.Views;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using ProjetProgAvENSC1A.Controllers;
-using ProjetProgAvENSC1A.Services.DataTables;
-using ProjetProgAvENSC1A.Views;
 
 namespace ProjetProgAvENSC1A
 {
@@ -142,12 +139,12 @@ namespace ProjetProgAvENSC1A
                 {
                     new Deliverable()
                     {
-                        Type = TypeDeliverable.ApplicationLogicielle,
+                        Type = DeliverableType.SoftwareApplication,
                         Information = "Je veux une application pour trier mes chaussettes"
                     },
                     new Deliverable()
                     {
-                        Type = TypeDeliverable.Rapport,
+                        Type = DeliverableType.Report,
                         Information = "Dis moi tout ce que tu sais à propos du Cloud Computing"
                     }
                 },
@@ -156,19 +153,19 @@ namespace ProjetProgAvENSC1A
                 Contributors = new Dictionary<Role, Person>()
                 {
                     {
-                        Role.ChefDeProj,
+                        Role.ProjetManager,
                         s1
                     },
                     {
-                        Role.Developp,
+                        Role.Developer,
                         s2
                     },
                     {
-                        Role.Secretaire,
+                        Role.Secretary,
                         s3
                     },
                     {
-                        Role.Tuteur,
+                        Role.Tutor,
                         t3
                     },
                 }
@@ -182,7 +179,7 @@ namespace ProjetProgAvENSC1A
                 {
                     new Deliverable()
                     {
-                        Type = TypeDeliverable.Rapport,
+                        Type = DeliverableType.Report,
                         Information = "Explain what cognitive sciences are"
                     }
                 },
@@ -191,15 +188,15 @@ namespace ProjetProgAvENSC1A
                 Contributors = new Dictionary<Role, Person>()
                 {
                     {
-                        Role.ChefDeProj,
+                        Role.ProjetManager,
                         s1
                     },
                     {
-                        Role.RespoQuali,
+                        Role.QualityManager,
                         s2
                     },
                     {
-                        Role.RespoFH,
+                        Role.HFManager,
                         s3
                     }
                 }

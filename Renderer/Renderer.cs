@@ -599,7 +599,7 @@ namespace ProjetProgAvENSC1A.Renderer
                 {
                     int length = int.Parse(modifierDictionary[currentIndex][Constants.LENGTH]);
 
-                    string res = $"{currentValue}{input}";
+                    string res = $"{currentValue.TrimStart()}{input}";
 
                     string newValue = res[..(res.Length > length ? ^1 : ^0)];
 
