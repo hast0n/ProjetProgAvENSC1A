@@ -61,6 +61,8 @@ namespace ProjetProgAvENSC1A.Views.NewProjectViews
                 "[emptyLine]",
                 "[courseAddHint]",
 
+                "[emptyLine]",
+
                 errorType switch
                 {
                     1 => "[noPromError]",
@@ -77,19 +79,43 @@ namespace ProjetProgAvENSC1A.Views.NewProjectViews
 
             LocalResources = new Dictionary<string, string>()
             {
-                {"delivTitle", "-- Deliverables --"},
+                {
+                    "delivTitle", 
+                    String.Join(App.Renderer.SplitChar, "" +
+                        "┌──────────────┐",
+                        "│ Deliverables │",
+                        "└──────────────┘")
+                },
                 {"delivList", BuildDeliverableList()},
                 {"delivAddHint", "<selector value=0 text=` Add a deliverable `>"},
 
-                {"promTitle", "-- Promotions --"},
+                {
+                    "promTitle",
+                    String.Join(App.Renderer.SplitChar, "" +
+                        "┌────────────┐",
+                        "│ Promotions │",
+                        "└────────────┘")
+                },
                 {"promList", BuildPromotionList()},
                 {"promAddHint", "<selector value=1 text=` Add a promotion `>"},
-                
-                {"courseTitle", "-- Courses --"},
+
+                {
+                    "courseTitle",
+                    String.Join(App.Renderer.SplitChar, "" +
+                        "┌─────────┐",
+                        "│ Courses │",
+                        "└─────────┘")
+                },
                 {"courseList", BuildCourseList()},
                 {"courseAddHint", "<selector value=2 text=` Add a course `>"},
-                
-                {"contribTitle", "-- Contributors --"},
+
+                {
+                    "contribTitle",
+                    String.Join(App.Renderer.SplitChar, "" +
+                        "┌──────────────┐",
+                        "│ Contributors │",
+                        "└──────────────┘")
+                },
                 {"contribList", BuildContributorsList()},
                 {"studentAddHint", "<selector value=3 text=` Add a student `>"},
                 {"teacherAddHint", "<selector value=4 text=` Add a teacher `>"},

@@ -43,7 +43,7 @@ namespace ProjetProgAvENSC1A.Views
                 },
                 {
                     "projectHintTrue",
-                    $"Select one of the following projects for more informations"
+                    $"Select one of the following projects for more information"
                 }
                 ,
                 {

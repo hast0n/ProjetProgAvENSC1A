@@ -142,7 +142,7 @@ namespace ProjetProgAvENSC1A.Renderer
 
             //CanInput = true;
             FrameWidth = 100;
-            WindowHeight = 50;
+            WindowHeight = 60;
             FrameMargin = 5;
             HorizontalLineChar = '─';
             VerticalLineChar = '│';
