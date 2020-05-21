@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ProjetProgAvENSC1A.Controllers
+namespace ProjetProgAvENSC1A.Views
 {
     class ProjectView : ContentView
     {
