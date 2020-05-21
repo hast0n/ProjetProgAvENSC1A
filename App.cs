@@ -20,6 +20,8 @@ namespace ProjetProgAvENSC1A
         {
             DB.Load();
 
+            //GenerateSampleData(true);
+
             Renderer.SetDefaultResources();
             Renderer.AddVisualResources(new Dictionary<string, string>()
             {
@@ -202,7 +204,22 @@ namespace ProjetProgAvENSC1A
                 }
             };
             #endregion
-            
+
+            #region define users (2)
+            User u1 = new User()
+            {
+                Privilege = Privilege.Administrator,
+                Name = "admin",
+                PasswordHash = SHA.GenerateSHA512String("password")
+            };
+            User u2 = new User()
+            {
+                Privilege = Privilege.Spectator,
+                Name = "spect",
+                PasswordHash = SHA.GenerateSHA512String("password")
+            };
+            #endregion
+
             foreach (var pers in new List<Person>() {t1, t2, t3, s1, s2, s3, e1})
                 DB[DBTable.Person].AddEntry(pers);
             
@@ -216,6 +233,9 @@ namespace ProjetProgAvENSC1A
             
             DB[DBTable.Project].AddEntry(proj1);
             DB[DBTable.Project].AddEntry(proj2);
+            
+            DB[DBTable.User].AddEntry(u1);
+            DB[DBTable.User].AddEntry(u2);
 
             // write on storage
             if (writeToStorage) DB.Persist();

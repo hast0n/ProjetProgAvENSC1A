@@ -56,6 +56,7 @@ namespace ProjetProgAvENSC1A.Views
         public string GetFormattedData(Dictionary<string, string> entries)
         {
             StringBuilder sb = new StringBuilder();
+
             if (entries.Count() != 0) 
             { 
                 int maxLength = entries.Values.Max(e => e.Length);
