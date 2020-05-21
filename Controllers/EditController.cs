@@ -115,7 +115,33 @@ namespace ProjetProgAvENSC1A.Controllers
 
         public static void RemoveProject()
         {
-            throw new NotImplementedException();
+
+            var projects = App.DB[DBTable.Project].Entries.ToList().ConvertAll(entry => (Project)entry);
+
+            Dictionary<string, string> conversionTable = new Dictionary<string, string>();
+
+
+            for (int i = 0; i < projects.Count; i++) conversionTable.Add($"{i}", projects[i].UUID);
+
+            ProjectListView ListPage = new ProjectListView(projects.ToDictionary(
+                p => conversionTable.First(kvp => kvp.Value.Equals(p.UUID)).Key,
+                p => $"{p.Topic}"),
+                false
+            );
+
+            var userRequest1 = App.Renderer.Render(ListPage);
+            
+            string uuid = conversionTable[userRequest1.GetSelectedValue()];
+            var toDelete = (Project)App.DB[DBTable.Project][uuid];
+            string toDeleteName = ((Project)App.DB[DBTable.Project][uuid]).Topic;
+
+            //delete form database
+            App.DB[DBTable.Project].RemoveEntry(uuid);
+            App.DB.Persist();
+
+            ErasedView erasedPage = new ErasedView(toDeleteName);
+
+            var userRequest2 = App.Renderer.Render(erasedPage);
         }
 
         private static Project AskBasicInfo()
