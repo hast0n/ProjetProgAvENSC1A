@@ -196,7 +196,8 @@ namespace ProjetProgAvENSC1A.Controllers
 
             ProjectListView ListPage = new ProjectListView(projects.ToDictionary(
                 p => conversionTable.First(kvp => kvp.Value.Equals(p.UUID)).Key,
-                p => $"{p.Topic}")
+                p => $"{p.Topic}"),
+                true
             );
 
             var userRequest = App.Renderer.Render(ListPage);

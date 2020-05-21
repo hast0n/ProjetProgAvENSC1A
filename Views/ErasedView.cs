@@ -24,7 +24,8 @@ namespace ProjetProgAvENSC1A.Views
                 "[erasedHint]",
 
                 "4*[emptyLine]",
-                "botBar"
+                "botBar",
+                "pressAnyHint"
             };
 
             LocalResources = new Dictionary<string, string>()

@@ -10,7 +10,7 @@ namespace ProjetProgAvENSC1A.Views
 {
     class ProjectListView : ContentView
     {
-        public ProjectListView(Dictionary<string, string> entries)
+        public ProjectListView(Dictionary<string, string> entries, bool reading)
         {
             SharedResources = App.Renderer.VisualResources;
 
@@ -26,7 +26,7 @@ namespace ProjetProgAvENSC1A.Views
                 "topBar",
                 "3*[emptyLine]",
 
-                existingProjects ? "[personHintTrue]" : "[personHintFalse]",
+                existingProjects ? (reading ? "[projectHintTrue]" : "[erasingHint]" ): "[projectHintFalse]",
                 "[emptyLine]",
                 existingProjects ? "[entryList]" : "[emptyLine]",
 
@@ -42,13 +42,17 @@ namespace ProjetProgAvENSC1A.Views
                     GetFormattedData(entries)
                 },
                 {
-                    "personHintTrue",
+                    "projectHintTrue",
                     $"Select one of the following projects for more informations"
                 }
                 ,
                 {
-                    "personHintFalse",
+                    "projectHintFalse",
                     $"There are no associated projects"
+                },
+                {
+                    "erasingHint",
+                    $"Select one of the following projects to erase"
                 }
             };
         }

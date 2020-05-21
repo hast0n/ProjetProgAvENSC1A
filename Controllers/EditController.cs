@@ -125,7 +125,8 @@ namespace ProjetProgAvENSC1A.Controllers
 
             ProjectListView ListPage = new ProjectListView(projects.ToDictionary(
                 p => conversionTable.First(kvp => kvp.Value.Equals(p.UUID)).Key,
-                p => $"{p.Topic}")
+                p => $"{p.Topic}"),
+                false
             );
 
             var userRequest1 = App.Renderer.Render(ListPage);
@@ -134,15 +135,9 @@ namespace ProjetProgAvENSC1A.Controllers
             var toDelete = (Project)App.DB[DBTable.Project][uuid];
             string toDeleteName = ((Project)App.DB[DBTable.Project][uuid]).Topic;
 
-            //delete from projects.json
-            string filePath = Constants.PROJECT_FILEPATH;
-            var json = JSON.parse(readFileSync(filePath));
-            var users = json.users;
-            json.users = users.filter((user) => { return user.username !== removeUser });
-
-
             //delete form database
-            App.DB[DBTable.Project].RemoveEntry(uuid); 
+            App.DB[DBTable.Project].RemoveEntry(uuid);
+            App.DB.Persist();
 
             ErasedView erasedPage = new ErasedView(toDeleteName);
 
